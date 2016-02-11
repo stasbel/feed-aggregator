@@ -1,6 +1,7 @@
 *.iml
-.gradle
-.idea
+.gradle/
+.idea/
 .gitignore
 /local.properties
 /build
+gradle/wrapper/
