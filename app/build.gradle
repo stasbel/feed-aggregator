@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 23
@@ -21,4 +36,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile('com.twitter.sdk.android:twitter:1.12.1@aar') { transitive = true; }
+    compile('com.crashlytics.sdk.android:answers:1.3.6@aar') { transitive = true; }
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') { transitive = true; }
 }

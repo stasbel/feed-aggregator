@@ -1,10 +1,7 @@
 <resources>
-    <!-- NO TRANSLATE -->
     <string name="app_name">FeedAgregator</string>
     <!-- TODO #NOTIMPORTANT написать нормальный url для поиска -->
     <string name="url_host">null</string>
     <string name="url_path">/null</string>
     <string name="url_scheme">null</string>
-
-    <!-- TRANSLATE -->
 </resources>

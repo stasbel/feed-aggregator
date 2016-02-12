@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="belaevstanislav.feedagregator">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".FeedAgregator"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -20,5 +22,8 @@
                     android:scheme="@string/url_scheme" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bb179734570ddc7b044d2852b40f5419fdccf41a" />
     </application>
 </manifest>
