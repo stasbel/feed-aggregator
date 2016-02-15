@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:id="@+id/feed_item_backgroud"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        android:clickable="true" />
+
+    <RelativeLayout
+        android:id="@+id/feed_item_foreground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/feed_item_author_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@null"
+            android:contentDescription="@null"
+            android:layout_marginLeft="3dp"
+            android:layout_marginTop="3dp" />
+
+        <TextView
+            android:id="@+id/feed_item_author_name"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_toRightOf="@+id/feed_item_author_image"
+            android:layout_toLeftOf="@+id/feed_item_logo"
+            android:layout_alignTop="@+id/feed_item_author_image" />
+
+        <TextView
+            android:id="@+id/feed_item_date"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_below="@+id/feed_item_author_name"
+            android:layout_toRightOf="@+id/feed_item_author_image"
+            android:layout_toLeftOf="@+id/feed_item_logo" />
+
+        <ImageView
+            android:id="@+id/feed_item_logo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@null"
+            android:contentDescription="@null"
+            android:layout_alignBottom="@+id/feed_item_date"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="3dp" />
+
+        <LinearLayout
+            android:id="@+id/feed_item_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/feed_item_author_image" >
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

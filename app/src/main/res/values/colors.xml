@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="swipe_left_background">#6EC3FC</color>
+    <color name="swipe_right_background">#FC6E6E</color>
+    <color name="swipe_text_color">#FFFFFF</color>
 </resources>
