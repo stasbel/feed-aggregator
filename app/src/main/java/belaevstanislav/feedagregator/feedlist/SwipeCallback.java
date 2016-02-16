@@ -19,7 +19,11 @@ public class SwipeCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        ((FeedListCursorAdapter.FeedItemViewHolder) viewHolder).delete();
+        if (direction == ItemTouchHelper.LEFT) {
+            ((FeedListCursorAdapter.FeedItemViewHolder) viewHolder).delete();
+        } else {
+
+        }
     }
 
     @Override

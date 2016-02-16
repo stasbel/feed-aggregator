@@ -29,7 +29,7 @@ public class FeedListActivity extends Activity implements InvokingMethod {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feed_list_layout);
 
-        feedList = (RecyclerView)findViewById(R.id.feed_list);
+        feedList = (RecyclerView) findViewById(R.id.feed_list);
         feedList.setHasFixedSize(true);
         feedList.setLayoutManager(new LinearLayoutManager(this));
         feedList.setItemAnimator(new DefaultItemAnimator());
@@ -52,7 +52,7 @@ public class FeedListActivity extends Activity implements InvokingMethod {
         // TODO infinite loop при нулевом запросе и при запросе только в вк
 
         // big tasks
-        // TODO fragments?
+        // TODO fragments? overviewscrenn? swipe круг по экрану to refresh?
         // TODO внешний вид новости + recycler view max + свайп влеов/вправо + (ошибки про recycler view в логах?)
         // TODO разобраться с exceptiona'mi + gradle-зависимости + все сторонние библиотеки + лицензии? + Log.e
         // TODO переписать все без api (с get-post запросами) (надо ли?) + Account Manager (?)

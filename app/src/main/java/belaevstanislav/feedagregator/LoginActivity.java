@@ -58,7 +58,7 @@ public class LoginActivity extends Activity {
             }
         });
 
-        Button button = (Button)findViewById(R.id.go_to_list_button);
+        Button button = (Button) findViewById(R.id.go_to_list_button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +72,6 @@ public class LoginActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         twitterAuthClient.onActivityResult(requestCode, resultCode, data);
     }
 
