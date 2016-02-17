@@ -22,7 +22,22 @@ import belaevstanislav.feedagregator.util.HelpfullMethod;
 import belaevstanislav.feedagregator.util.InvokingMethod;
 
 public class FeedListActivity extends Activity implements InvokingMethod {
+    private static FeedListActivity activity;
+
+    public FeedListActivity() {
+        activity = this;
+    }
+
+    public static FeedListActivity getActivity() {
+        return activity;
+    }
+
     private RecyclerView feedList;
+    private FeedListCursorAdapter adapter;
+
+    public FeedListCursorAdapter getAdapter() {
+        return adapter;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +87,7 @@ public class FeedListActivity extends Activity implements InvokingMethod {
     @Override
     public void invoke() {
         Cursor cursor = DatabaseManager.getInstance().getAll();
-        FeedListCursorAdapter adapter = new FeedListCursorAdapter(FeedListActivity.this, cursor);
+        adapter = new FeedListCursorAdapter(FeedListActivity.this, cursor);
         feedList.setAdapter(adapter);
         StorageManager.getInstance().saveLong(StorageKeys.LAST_TIME_OF_FEED_LIST_REFRESH,
                 HelpfullMethod.getNowTime());

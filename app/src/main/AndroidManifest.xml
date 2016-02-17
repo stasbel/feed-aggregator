@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="belaevstanislav.feedagregator">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,17 +16,22 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
+
                 <data
                     android:host="@string/url_host"
                     android:path="@string/url_path"
                     android:scheme="@string/url_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".FeedListActivity">
-        </activity>
+        <activity android:name=".FeedListActivity"></activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="bb179734570ddc7b044d2852b40f5419fdccf41a" />
+
+        <activity android:name=".SingleFeedItemActivity"></activity>
     </application>
+
 </manifest>

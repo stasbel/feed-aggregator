@@ -21,7 +21,7 @@ public class FeedListOnScrollListener extends RecyclerView.OnScrollListener {
         super.onScrollStateChanged(recyclerView, newState);
 
         // TODO возвращаться в исходное положение плавнее?
-        FeedListCursorAdapter.FeedItemViewHolder lastSwiped = swipeCallback.getLastSwiped();
+        FeedItemViewHolder lastSwiped = swipeCallback.getLastSwiped();
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING && lastSwiped != null) {
             lastSwiped.resetSwipeState();
         }

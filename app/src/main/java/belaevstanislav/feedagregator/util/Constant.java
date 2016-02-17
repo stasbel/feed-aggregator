@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -17,10 +18,15 @@ import belaevstanislav.feedagregator.R;
 public class Constant {
     private static final Context context = FeedAgregator.getContext();
     private static final Resources resources = context.getResources();
+    private static final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
 
     private static int getResolvedColor(int resourceId) {
         return ContextCompat.getColor(context, resourceId);
     }
+
+    // SCREEN
+    public static final float SCREEN_HEIGHT_PX = displayMetrics.heightPixels;
+    public static final float SCREEN_WIDTH_PX = displayMetrics.widthPixels;
 
     // STORAGE
     public static final String STORAGE_NAME = "mystorage";
@@ -57,8 +63,9 @@ public class Constant {
 
     // FEEDLIST
     public static final float ROW_LAYOUT_MAX_HEIGHT = resources.getDimensionPixelSize(R.dimen.row_layout_max_height);
-    public static final float SWIPE_TRASHHOLD = 1f;
+    public static final float SWIPE_FULL_TRASHHOLD = 1f;
     public static final float SWIPE_LOCK_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_lock_size);
+    public static final float SWIPE_LOCK_TRASHHOLD = 1 - (SWIPE_LOCK_SIZE / SCREEN_WIDTH_PX);
     public static final float SWIPE_LOCK_MARGIN = resources.getDimensionPixelSize(R.dimen.swipe_lock_margin);
     public static final Paint SWIPE_LEFT_BACKGROUND_PAINT = new Paint();
     static {

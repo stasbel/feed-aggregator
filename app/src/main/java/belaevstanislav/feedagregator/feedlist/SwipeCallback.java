@@ -4,8 +4,6 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
-import belaevstanislav.feedagregator.util.Constant;
-
 public class SwipeCallback extends ItemTouchHelper.Callback {
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
@@ -19,21 +17,22 @@ public class SwipeCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+        FeedItemViewHolder feedItemViewHolder = (FeedItemViewHolder) viewHolder;
         if (direction == ItemTouchHelper.LEFT) {
-            ((FeedListCursorAdapter.FeedItemViewHolder) viewHolder).delete();
+            feedItemViewHolder.delete();
         } else {
-
+            feedItemViewHolder.open();
         }
     }
 
     @Override
     public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
-        return Constant.SWIPE_TRASHHOLD;
+        return ((FeedItemViewHolder) viewHolder).getSwipeTrashold();
     }
 
-    private FeedListCursorAdapter.FeedItemViewHolder lastSwiped = null;
+    private FeedItemViewHolder lastSwiped = null;
 
-    public FeedListCursorAdapter.FeedItemViewHolder getLastSwiped() {
+    public FeedItemViewHolder getLastSwiped() {
         return lastSwiped;
     }
 
@@ -41,7 +40,7 @@ public class SwipeCallback extends ItemTouchHelper.Callback {
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
         // TODO рисовать промежуточное состояние в onchilddrawover для увеличения fps?
 
-        FeedListCursorAdapter.FeedItemViewHolder feedItemViewHolder = (FeedListCursorAdapter.FeedItemViewHolder) viewHolder;
+        FeedItemViewHolder feedItemViewHolder = (FeedItemViewHolder) viewHolder;
 
         if (feedItemViewHolder != lastSwiped) {
             if (lastSwiped != null) {

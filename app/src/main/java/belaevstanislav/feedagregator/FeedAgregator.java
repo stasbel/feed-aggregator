@@ -29,8 +29,8 @@ public class FeedAgregator extends Application {
         TwitterAuthConfig twitterAuthConfig = new TwitterAuthConfig(Constant.TWITTER_API_KEY,
                 Constant.TWITTER_API_SECRET);
         Fabric fabric = new Fabric.Builder(this)
-                .kits(new Twitter(twitterAuthConfig), new Answers(), new Crashlytics())
-                .debuggable(true)
+                .kits(new Twitter(twitterAuthConfig))
+                //.debuggable(true)
                 .build();
         Fabric.with(fabric);
     }

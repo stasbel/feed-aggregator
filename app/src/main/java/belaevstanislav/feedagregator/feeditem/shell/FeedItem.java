@@ -9,7 +9,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-import belaevstanislav.feedagregator.feedlist.FeedListCursorAdapter;
+import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
 import belaevstanislav.feedagregator.singleton.images.ImagesManager;
 import belaevstanislav.feedagregator.util.Constant;
@@ -35,7 +35,7 @@ public abstract class FeedItem extends FeedItemCore {
 
     public abstract int getLogo();
 
-    private void drawHead(Context context, FeedListCursorAdapter.FeedItemViewHolder holder,
+    private void drawHead(Context context, FeedItemViewHolder holder,
                           boolean isNeedToDrawLogoImage) throws Exception {
         ImagesManager.getInstance().load(getAuthorImageUrl()).priority(Picasso.Priority.HIGH).fit().tag(context).into(holder.getAuthorImageView());
         holder.getAuthorNameView().setText(getAuthorName());
@@ -47,7 +47,7 @@ public abstract class FeedItem extends FeedItemCore {
 
     abstract void fillContent(LinearLayout content, Context context);
 
-    private void drawContent(Context context, FeedListCursorAdapter.FeedItemViewHolder holder) {
+    private void drawContent(Context context, FeedItemViewHolder holder) {
         LinearLayout content = holder.getContentView();
         // TODO можно быть умней и проверять совпадение прошлых и новых view'ек чтобы не inflate'ить
         // TODO (очень врятли, слишком разные могут быть view'шки, а организация внутри предполагает массив)
@@ -67,7 +67,7 @@ public abstract class FeedItem extends FeedItemCore {
         });*/
     }
 
-    public void drawView(Context context, FeedListCursorAdapter.FeedItemViewHolder holder,
+    public void drawView(Context context, FeedItemViewHolder holder,
                          boolean isNeedToDrawLogoImage) {
         try{
             drawHead(context, holder, isNeedToDrawLogoImage);
