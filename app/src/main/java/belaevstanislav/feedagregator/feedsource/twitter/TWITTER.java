@@ -3,7 +3,7 @@ package belaevstanislav.feedagregator.feedsource.twitter;
 import belaevstanislav.feedagregator.feedsource.FeedSource;
 import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.task.getter.TWITTERGetterTask;
-import belaevstanislav.feedagregator.util.AsyncLatch;
+import belaevstanislav.feedagregator.util.asynclatch.AsyncLatch;
 
 public class TWITTER implements FeedSource {
     public static void fetchFeedItems(AsyncLatch asyncLatch) {

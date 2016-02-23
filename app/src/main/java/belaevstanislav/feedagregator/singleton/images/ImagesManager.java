@@ -6,7 +6,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.ExecutorService;
 
-import belaevstanislav.feedagregator.FeedAgregator;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.singleton.SignletonManager;
 
 public class ImagesManager implements SignletonManager {

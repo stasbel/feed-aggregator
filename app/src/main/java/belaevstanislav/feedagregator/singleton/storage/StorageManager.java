@@ -1,8 +1,6 @@
 package belaevstanislav.feedagregator.singleton.storage;
 
-import android.app.Activity;
-
-import belaevstanislav.feedagregator.FeedAgregator;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.singleton.SignletonManager;
 
 public class StorageManager implements SignletonManager {

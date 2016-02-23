@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import belaevstanislav.feedagregator.FeedAgregator;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.R;
 
 // TODO много классов constant с общим предком в package?
@@ -23,6 +23,9 @@ public class Constant {
     private static int getResolvedColor(int resourceId) {
         return ContextCompat.getColor(context, resourceId);
     }
+
+    // INTENTKEYS
+    public static final String FEED_ITEM_ID_KEY = "id";
 
     // SCREEN
     public static final float SCREEN_HEIGHT_PX = displayMetrics.heightPixels;

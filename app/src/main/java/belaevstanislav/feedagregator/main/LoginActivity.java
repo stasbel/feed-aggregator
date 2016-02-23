@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator;
+package belaevstanislav.feedagregator.main;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
+import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.singleton.images.ImagesManager;
 import belaevstanislav.feedagregator.singleton.storage.StorageManager;

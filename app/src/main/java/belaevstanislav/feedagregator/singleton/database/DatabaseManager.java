@@ -1,6 +1,6 @@
 package belaevstanislav.feedagregator.singleton.database;
 
-import belaevstanislav.feedagregator.FeedAgregator;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.singleton.SignletonManager;
 
 public class DatabaseManager implements SignletonManager {

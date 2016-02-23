@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.feedlist;
+package belaevstanislav.feedagregator.feedlist.baseadapter;
 
 /**
  * <p>The CursorFilter delegates most of the work to the CursorAdapter.

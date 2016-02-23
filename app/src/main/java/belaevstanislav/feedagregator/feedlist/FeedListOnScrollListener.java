@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import belaevstanislav.feedagregator.FeedAgregator;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.singleton.images.ImagesManager;
 
 public class FeedListOnScrollListener extends RecyclerView.OnScrollListener {

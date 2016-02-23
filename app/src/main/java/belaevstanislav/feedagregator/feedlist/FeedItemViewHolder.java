@@ -1,7 +1,6 @@
 package belaevstanislav.feedagregator.feedlist;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -11,14 +10,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import belaevstanislav.feedagregator.FeedListActivity;
+import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
 import belaevstanislav.feedagregator.R;
-import belaevstanislav.feedagregator.SingleFeedItemActivity;
+import belaevstanislav.feedagregator.main.OnFeedItemOpenListener;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.util.Constant;
 
 public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     private final CursorRecyclerViewAdapter<FeedItemViewHolder> cursorRecyclerViewAdapter;
+    private final OnFeedItemOpenListener onFeedItemOpenListener;
     private final ImageView backgroundView;
     private final View foregroundView;
     private final ImageView authorImage;
@@ -28,9 +28,10 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     private final LinearLayout content;
 
     public FeedItemViewHolder(CursorRecyclerViewAdapter<FeedItemViewHolder> cursorRecyclerViewAdapter,
-                              View itemView) {
+                              Activity activity, View itemView) {
         super(itemView);
         this.cursorRecyclerViewAdapter = cursorRecyclerViewAdapter;
+        this.onFeedItemOpenListener = (OnFeedItemOpenListener) activity;
         this.backgroundView = (ImageView) itemView.findViewById(R.id.feed_item_backgroud);
         backgroundView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +81,8 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         this.id = id;
     }
 
+    // commands
+
     public void delete() {
         // TODO getLayoutPosition (заменить везде, где можно))? выполнять удаление лениво для ускорения?
         // TODO добавить анимацию удаления
@@ -89,17 +92,13 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         cursorRecyclerViewAdapter.notifyItemRemoved(position);
     }
 
-    public static FeedItemViewHolder lastOpen = null;
-
     public void open() {
-        // TODO анимация?
-        Activity activity = FeedListActivity.getActivity();
-        Intent intent = new Intent(activity, SingleFeedItemActivity.class);
-        intent.putExtra("id", getId());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        FeedItemViewHolder.lastOpen = this;
-        activity.startActivity(intent);
+        // TODO не удалять, а?
+        delete();
+        onFeedItemOpenListener.onOpen(getId());
     }
+
+    // swipe
 
     private float lockX;
     private float gointBackAbsoluteX;
@@ -149,7 +148,7 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void drawSwipeBackground(Canvas c) {
-        // TODO иконки? выполнять поменьше дейтсвий? new font for text?
+        // TODO иконки? выполнять поменьше действий? new font for text?
 
         final float relativeX = foregroundView.getTranslationX();
         final float absoluteTop = itemView.getTop(), absoluteBot = itemView.getBottom();

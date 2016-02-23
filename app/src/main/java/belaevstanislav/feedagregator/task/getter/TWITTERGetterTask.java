@@ -21,7 +21,7 @@ import belaevstanislav.feedagregator.singleton.storage.StorageManager;
 import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.singleton.threads.PriorityTaskPool;
 import belaevstanislav.feedagregator.task.parser.TWITTERParserTask;
-import belaevstanislav.feedagregator.util.AsyncLatch;
+import belaevstanislav.feedagregator.util.asynclatch.AsyncLatch;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.HighPriorityAsyncTask;
 

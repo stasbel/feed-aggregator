@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator;
+package belaevstanislav.feedagregator.feedsource;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -20,7 +20,7 @@ public enum FeedSourceName implements Parcelable {
             new Parcelable.Creator<FeedSourceName>() {
                 @Override
                 public FeedSourceName createFromParcel(Parcel in) {
-                    return FeedSourceName.values()[in.readInt()];
+                    return values()[in.readInt()];
                 }
 
                 @Override

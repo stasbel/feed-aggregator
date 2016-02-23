@@ -5,33 +5,30 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".FeedAgregator"
+        android:name=".main.FeedAgregator"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        <activity android:name=".main.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-
                 <data
                     android:host="@string/url_host"
                     android:path="@string/url_path"
                     android:scheme="@string/url_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".FeedListActivity"></activity>
+        <activity android:name=".main.FeedListActivity"/>
+        <activity android:name=".main.FeedListActivity$SingleFeedItemActivity"/>
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="bb179734570ddc7b044d2852b40f5419fdccf41a" />
-
-        <activity android:name=".SingleFeedItemActivity"></activity>
     </application>
 
 </manifest>
