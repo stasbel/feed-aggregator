@@ -1,8 +1,8 @@
 package belaevstanislav.feedagregator.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,22 +17,14 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
-import belaevstanislav.feedagregator.singleton.images.ImagesManager;
-import belaevstanislav.feedagregator.singleton.storage.StorageManager;
-import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
     private TwitterAuthClient twitterAuthClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-
-        StorageManager.initialize();
-        DatabaseManager.initialize();
-        ThreadsManager.initialize();
-        ImagesManager.initialize();
 
         ImageButton imageButtonTWITTER = (ImageButton) findViewById(R.id.twitter_login_button);
         imageButtonTWITTER.setOnClickListener(new View.OnClickListener() {

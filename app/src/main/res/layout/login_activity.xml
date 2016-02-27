@@ -9,17 +9,17 @@
         android:id="@+id/twitter_login_button"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/twitter_logo"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:contentDescription="@null"
         android:scaleType="fitCenter"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp" />
+        android:src="@drawable/twitter_logo" />
 
     <Button
         android:id="@+id/go_to_list_button"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="@string/go_button_text"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/go_button_text" />
 </RelativeLayout>

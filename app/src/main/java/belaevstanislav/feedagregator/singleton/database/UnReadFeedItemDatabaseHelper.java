@@ -27,12 +27,12 @@ public class UnReadFeedItemDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database) {
         String CREATE_TABLE_1 = "CREATE TABLE " + COMMON_INFORMATION_TABLE_NAME + " ("
-                + KEY_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + KEY_TABLE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, "
                 + KEY_TABLE_SOURCE + " TEXT, "
                 + KEY_TABLE_TIME + " INTEGER)";
         database.execSQL(CREATE_TABLE_1);
         String CREATE_TABLE_2 = "CREATE TABLE " + FEED_ITEM_BYTECODE_TABLE_NAME + " ("
-                + KEY_TABLE_ID + " INTEGER PRIMARY KEY, "
+                + KEY_TABLE_ID + " INTEGER PRIMARY KEY UNIQUE, "
                 + KEY_TABLE_BYTECODE + " BLOB)";
         database.execSQL(CREATE_TABLE_2);
     }

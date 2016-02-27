@@ -3,4 +3,5 @@
     <string name="go_button_text">GO TO FEED LIST</string>
     <string name="swipe_left_text">OPEN</string>
     <string name="swipe_right_text">MARK AS READ</string>
+    <string name="drawer_item_feedlist">Feed List</string>
 </resources>

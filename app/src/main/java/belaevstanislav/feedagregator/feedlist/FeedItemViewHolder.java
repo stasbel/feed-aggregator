@@ -93,9 +93,9 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void open() {
-        // TODO не удалять, а?
-        delete();
-        onFeedItemOpenListener.onOpen(getId());
+        int position = getAdapterPosition();
+        onFeedItemOpenListener.onOpen(position, getId());
+        cursorRecyclerViewAdapter.notifyItemChanged(position);
     }
 
     // swipe

@@ -8,6 +8,10 @@ import com.crashlytics.android.answers.Answers;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
+import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
+import belaevstanislav.feedagregator.singleton.images.ImagesManager;
+import belaevstanislav.feedagregator.singleton.storage.StorageManager;
+import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.util.Constant;
 import io.fabric.sdk.android.Fabric;
 
@@ -33,5 +37,10 @@ public class FeedAgregator extends Application {
                 .debuggable(true)
                 .build();
         Fabric.with(fabric);
+
+        StorageManager.initialize();
+        DatabaseManager.initialize();
+        ThreadsManager.initialize();
+        ImagesManager.initialize();
     }
 }

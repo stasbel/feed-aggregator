@@ -25,6 +25,7 @@ public class Constant {
     }
 
     // INTENTKEYS
+    public static final String FEED_ITEM_ID_POSITION = "position";
     public static final String FEED_ITEM_ID_KEY = "id";
 
     // SCREEN
@@ -39,7 +40,7 @@ public class Constant {
 
     // DATABASE
     public static final String DATABASE_NAME = "UnReadFeedItem.db";
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 6;
     public static final String COMMON_INFORMATION_TABLE_NAME = "common_information";
     public static final String FEED_ITEM_BYTECODE_TABLE_NAME = "feed_item_bytecode";
     public static final String KEY_TABLE_ID = "_id";
