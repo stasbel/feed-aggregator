@@ -33,7 +33,9 @@ public class Constant {
     public static final float SCREEN_WIDTH_PX = displayMetrics.widthPixels;
 
     // STORAGE
-    public static final String STORAGE_NAME = "mystorage";
+    public static final long STORAGE_DEFAULT_LONG = 0L;
+    public static final long STORAGE_DEFAULT_LAST_TWEET_ID = 0L;
+    public static final boolean STORAGE_DEFAULT_IS_SAVE_NEWS = true;
 
     // FEEDSOURCE
     public static final int SOURCES_COUNT = 1;

@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
-import belaevstanislav.feedagregator.singleton.storage.StorageKeys;
+import belaevstanislav.feedagregator.singleton.storage.StorageKey;
 import belaevstanislav.feedagregator.singleton.storage.StorageManager;
 import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.singleton.threads.PriorityTaskPool;
@@ -69,7 +69,7 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
             int size = tweetList.size();
             Log.e("size", String.valueOf(size));
             if (size > 0) {
-                StorageManager.getInstance().saveLong(StorageKeys.LAST_TWEET_ID, tweetList.get(0).getId());
+                StorageManager.getInstance().saveLong(StorageKey.LAST_TWEET_ID, tweetList.get(0).getId());
 
                 ArrayList<Future<?>> tasks = new ArrayList<>(size);
 
@@ -122,13 +122,13 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
         // TODO реализовать проход по страницам (результатов может быть больше, чем 200)
         Integer number;
         Long id;
-        if (!StorageManager.getInstance().isInMemory(StorageKeys.LAST_TWEET_ID)) {
+        if (!StorageManager.getInstance().isInMemory(StorageKey.LAST_TWEET_ID)) {
             number = Constant.FIRST_TWITTER_QUERY_PAGE_SIZE;
             id = null;
         } else {
             number = Constant.MAX_TWEETS_PER_PAGE;
             // TODO delete 10000000
-            id = StorageManager.getInstance().getLong(StorageKeys.LAST_TWEET_ID) - 100000000;
+            id = StorageManager.getInstance().getLong(StorageKey.LAST_TWEET_ID) - 100000000;
         }
         TwitterCore.getInstance().getApiClient().getStatusesService().homeTimeline(
                 number, null, null, null, null, null, null,

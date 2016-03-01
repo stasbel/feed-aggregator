@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.mikepenz.materialdrawer.Drawer;
+
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
@@ -24,18 +26,22 @@ import belaevstanislav.feedagregator.feedlist.FeedListOnScrollListener;
 import belaevstanislav.feedagregator.feedlist.SwipeCallback;
 import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
-import belaevstanislav.feedagregator.singleton.storage.StorageKeys;
+import belaevstanislav.feedagregator.singleton.storage.StorageKey;
 import belaevstanislav.feedagregator.singleton.storage.StorageManager;
 import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.HelpfullMethod;
+import belaevstanislav.feedagregator.util.MyDrawer;
+import belaevstanislav.feedagregator.util.MyToolbar;
 import belaevstanislav.feedagregator.util.asynclatch.AsyncLatch;
 import belaevstanislav.feedagregator.util.asynclatch.onShowFeedListListener;
+import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
+import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
 public class FeedListActivity extends AppCompatActivity implements onShowFeedListListener, OnFeedItemOpenListener {
     private static FeedListCursorAdapter adapter;
     private RecyclerView feedList;
     private ProgressBar loadingBar;
+    private Drawer drawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,20 +56,29 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
                 actionBar.setDisplayShowTitleEnabled(false);
+                actionBar.setDisplayHomeAsUpEnabled(true);
             }
 
-            // TODO later [drawer]
-            /*new DrawerBuilder()
-                    .withActivity(this)
-                    .withToolbar(toolbar)
-                    .withHeader(R.layout.drawer_header)
-                    .addDrawerItems(new PrimaryDrawerItem().withName(R.string.drawer_item_feedlist))
-                    .build();*/
+            // drawer
+            drawer = MyDrawer.createDrawer(this, toolbar);
 
             // main
             initializeFeedList();
             loadingBar = (ProgressBar) findViewById(R.id.loading_bar);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        drawer.setSelectionAtPosition(1);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DatabaseManager.getInstance().close();
     }
 
     @Override
@@ -90,7 +105,7 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
-            // TODO быстро 2 раза = 2x items
+            // TODO исправить: быстро 2 раза = 2x items
             fetchFeedItems();
         }
 
@@ -110,7 +125,9 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
 
     public void fetchFeedItems() {
         // TODO не удалять старые, a десерализовать
-        DatabaseManager.getInstance().deleteAll();
+        if (!StorageManager.getInstance().getBoolean(StorageKey.IS_SAVE_NEWS)) {
+            DatabaseManager.getInstance().deleteAll();
+        }
 
         feedList.setVisibility(View.INVISIBLE);
         loadingBar.setVisibility(View.VISIBLE);
@@ -127,19 +144,20 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
         feedList.setAdapter(adapter);
 
         // renember last time & remove loading bar
-        StorageManager.getInstance().saveLong(StorageKeys.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
+        StorageManager.getInstance().saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
         loadingBar.setVisibility(View.INVISIBLE);
         feedList.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void onOpen(int position, long id) {
-        // TODO анимация?
-        Intent intent = new Intent(this, SingleFeedItemActivity.class);
-        intent.putExtra(Constant.FEED_ITEM_ID_POSITION, position);
-        intent.putExtra(Constant.FEED_ITEM_ID_KEY, id);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
+    public void onOpen(final int position, final long id) {
+        HelpfullMethod.createActivity(this, SingleFeedItemActivity.class, new IntentModifier() {
+            @Override
+            public void modify(Intent intent) {
+                intent.putExtra(Constant.FEED_ITEM_ID_POSITION, position);
+                intent.putExtra(Constant.FEED_ITEM_ID_KEY, id);
+            }
+        });
     }
 
     public static class SingleFeedItemActivity extends AppCompatActivity {
@@ -154,19 +172,7 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
                 setContentView(R.layout.single_feed_item_layout);
 
                 // toolbar
-                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-                setSupportActionBar(toolbar);
-                ActionBar actionBar = getSupportActionBar();
-                if (actionBar != null) {
-                    actionBar.setDisplayShowTitleEnabled(false);
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                    toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            onBackPressed();
-                        }
-                    });
-                }
+                MyToolbar.setToolbar(this);
 
                 // feeditem
                 Bundle bundle = getIntent().getExtras();
@@ -240,5 +246,4 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
 // TODO user interface / notifications
 // TODO переписать с fragment'ами для больших экранов
 // TODO overviewscrenn? swipe круг по экрану to refresh?
-// TODO иконки https://design.google.com/icons/index.html#ic_accessibility
-// TODO поиск в toolbar'e
+// TODO поиск в toolbar'e, аккаунты в drawer, selection в новости

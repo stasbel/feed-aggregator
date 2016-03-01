@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="go_button_text">GO TO FEED LIST</string>
     <string name="swipe_left_text">OPEN</string>
     <string name="swipe_right_text">MARK AS READ</string>
     <string name="drawer_item_feedlist">Feed List</string>
+    <string name="drawer_item_login">Account Manager</string>
+    <string name="drawer_item_settings">Settings</string>
+    <string name="drawer_item_exit">Exit</string>
+    <string name="settings_save_news">Save news</string>
 </resources>
