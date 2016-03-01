@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,7 +16,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import com.mikepenz.materialdrawer.Drawer;
 
@@ -37,11 +38,12 @@ import belaevstanislav.feedagregator.util.asynclatch.onShowFeedListListener;
 import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
-public class FeedListActivity extends AppCompatActivity implements onShowFeedListListener, OnFeedItemOpenListener {
+public class FeedListActivity extends AppCompatActivity implements onShowFeedListListener, OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
     private static FeedListCursorAdapter adapter;
     private RecyclerView feedList;
-    private ProgressBar loadingBar;
+    private Toolbar toolbar;
     private Drawer drawer;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             setContentView(R.layout.feed_list_layout);
 
             // toolbar
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             ActionBar actionBar = getSupportActionBar();
             if (actionBar != null) {
@@ -62,9 +64,12 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             // drawer
             drawer = MyDrawer.createDrawer(this, toolbar);
 
+            // swiperefresh
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+            swipeRefreshLayout.setOnRefreshListener(this);
+
             // main
             initializeFeedList();
-            loadingBar = (ProgressBar) findViewById(R.id.loading_bar);
         }
     }
 
@@ -106,10 +111,16 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_refresh) {
             // TODO исправить: быстро 2 раза = 2x items
-            fetchFeedItems();
+            onRefresh();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        fetchFeedItems();
     }
 
     public void initializeFeedList() {
@@ -129,11 +140,15 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             DatabaseManager.getInstance().deleteAll();
         }
 
-        feedList.setVisibility(View.INVISIBLE);
-        loadingBar.setVisibility(View.VISIBLE);
-
         AsyncLatch asyncLatch = new AsyncLatch(Constant.SOURCES_COUNT, this);
         TWITTER.fetchFeedItems(asyncLatch);
+    }
+
+    private boolean isRecyclerScrollable() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) feedList.getLayoutManager();
+        RecyclerView.Adapter adapter = feedList.getAdapter();
+        return !(layoutManager == null || adapter == null)
+                && layoutManager.findLastCompletelyVisibleItemPosition() < adapter.getItemCount() - 1;
     }
 
     @Override
@@ -145,8 +160,20 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
 
         // renember last time & remove loading bar
         StorageManager.getInstance().saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
-        loadingBar.setVisibility(View.INVISIBLE);
-        feedList.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setRefreshing(false);
+
+        // scroll flags
+        feedList.post(new Runnable() {
+            @Override
+            public void run() {
+                if (isRecyclerScrollable()) {
+                    AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+                    params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                            | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+                    toolbar.setLayoutParams(params);
+                }
+            }
+        });
     }
 
     @Override
@@ -220,22 +247,6 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
     }
 }
 
-// TODO OLD TODO'es
-// feedlist
-// TODO где-то нужно начинать поток с десеализацией старых новостей
-
-// sources
-// TODO везде настроить время + youtube через многопотоков потоки + обработка в потоках
-// TODO infinite loop при нулевом запросе и при запросе только в вк
-
-// big tasks
-// TODO внешний вид новости + recycler view max + свайп влеов/вправо + (ошибки про recycler view в логах?)
-// TODO разобраться с exceptiona'mi + gradle-зависимости + все сторонние библиотеки + лицензии? + Log.e
-// TODO переписать все без api (с get-post запросами) (надо ли?) + Account Manager (?)
-// TODO как работают thread'ы? возможно, надо добавить возможность вставлять async task в thread pool, потому что async task'ов уже многовато (fetch у пары новостей впереди)
-// TODO FULL TWITTER LOGIN
-// TODO сохраненные feed item?
-// TODO можно подождать обработки первых нескольких feeditem'ов (async), чтобы пользователь не видел подгрузки первых картинок
 // TODO (THREADS) все с приоритетами надо переписывать: нужен thread pool executor, который принимает asynk task, runnable, callable, сравнивает-
 // TODO (THREADS) -своим компаратором, является fixed thread pool из 2*CORES + 1 thread'ов, и умно раздает Process.setThreadPrority в threadFactory-
 // TODO (THREADS) -(backgroud или foreground (обратно пропорционально объему работы и в соствествие с приоритетом) или еще чего), тогда-
@@ -243,7 +254,16 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
 // TODO (THREADS) -все кроме асинронных логинов из api (<constant штук) будет выполнятся в thread pool'e
 
 // TODO NEW
+// TODO внешний вид новости
 // TODO user interface / notifications
 // TODO переписать с fragment'ами для больших экранов
 // TODO overviewscrenn? swipe круг по экрану to refresh?
 // TODO поиск в toolbar'e, аккаунты в drawer, selection в новости
+// TODO account manager?
+// TODO ошибки recycler view
+// TODO exeptions?
+// TODO старые новости
+// TODO можно подождать обработки первых нескольких feeditem'ов (async), чтобы пользователь не видел подгрузки первых картинок
+// TODO threads
+// TODO везде настроить время + youtube через многопотоков потоки + обработка в потоках
+// TODO infinite loop при нулевом запросе и при запросе только в вк

@@ -16,13 +16,13 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:elevation="@dimen/toolbar_elevation"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme"
             app:theme="@style/ToolbarTheme" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -33,15 +33,5 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
 
-        <ProgressBar
-            android:id="@+id/loading_bar"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:indeterminateOnly="true"
-            android:keepScreenOn="true"
-            android:visibility="invisible" />
-
-    </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.design.widget.CoordinatorLayout>
