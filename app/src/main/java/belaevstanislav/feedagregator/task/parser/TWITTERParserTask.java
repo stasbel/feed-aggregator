@@ -8,11 +8,11 @@ import com.twitter.sdk.android.core.models.Tweet;
 import java.text.ParseException;
 import java.util.concurrent.Callable;
 
-import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
-import belaevstanislav.feedagregator.task.cacher.TWITTERCacherTask;
+import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feeditem.shell.TWITTERFeedItem;
-import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
+import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
+import belaevstanislav.feedagregator.task.cacher.TWITTERCacherTask;
 
 public class TWITTERParserTask extends ParserTask implements Callable<FeedItem> {
     private final Tweet tweet;
@@ -26,7 +26,6 @@ public class TWITTERParserTask extends ParserTask implements Callable<FeedItem> 
 
     @Override
     public FeedItem call() {
-        Log.e("2", "2");
         TWITTERFeedItem feedItem = null;
         try {
             feedItem = new TWITTERFeedItem((TWITTERFeedItemCore)getFeedItemCore(), tweet);

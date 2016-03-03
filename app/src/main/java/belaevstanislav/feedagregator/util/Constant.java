@@ -11,8 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.main.FeedAgregator;
 
 // TODO много классов constant с общим предком в package?
 public class Constant {
@@ -27,6 +27,11 @@ public class Constant {
     // INTENTKEYS
     public static final String FEED_ITEM_ID_POSITION = "position";
     public static final String FEED_ITEM_ID_KEY = "id";
+
+    // DATASERVICE
+    public static final String DATASERVICE_ACTION = resources.getString(R.string.dataservice_action);
+    public static final String DATASERVICE_COMMAND_KEY = "DataServiceCommand";
+    public static final String DATASERVICE_MESSAGE_KEY = "NotificatorMessage";
 
     // SCREEN
     public static final float SCREEN_HEIGHT_PX = displayMetrics.heightPixels;

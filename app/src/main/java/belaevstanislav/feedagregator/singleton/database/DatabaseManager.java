@@ -6,6 +6,9 @@ import belaevstanislav.feedagregator.singleton.SignletonManager;
 public class DatabaseManager implements SignletonManager {
     private static UnReadFeedItemDatabaseHelper databaseHelper;
 
+    private DatabaseManager() {
+    }
+
     public static void initialize() {
         databaseHelper = new UnReadFeedItemDatabaseHelper(FeedAgregator.getContext());
         // TODO ???

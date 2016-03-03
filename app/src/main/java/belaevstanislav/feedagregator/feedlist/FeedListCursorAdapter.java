@@ -11,20 +11,22 @@ import android.view.ViewGroup;
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
+import belaevstanislav.feedagregator.singleton.threads.PriorityTaskPool;
 import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.HighPriorityAsyncTask;
 
 public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemViewHolder> {
     private final Activity activity;
     private final LayoutInflater layoutInflater;
     private final int indexColumnId;
+    private final PriorityTaskPool priorityTaskPool;
 
     public FeedListCursorAdapter(Activity activity, Cursor cursor) {
         super(cursor);
         this.activity = activity;
         this.layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.indexColumnId = cursor.getColumnIndex(Constant.KEY_TABLE_ID);
+        this.priorityTaskPool = ThreadsManager.getInstance();
     }
 
     @Override
@@ -33,7 +35,7 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         return new FeedItemViewHolder(this, activity, view);
     }
 
-    private class GetFeedItemAndDrawViewAsyncTask extends HighPriorityAsyncTask<Void, Void, FeedItem> {
+    private class GetFeedItemAndDrawViewAsyncTask extends AsyncTask<Void, Void, FeedItem> {
         private final long id;
         private final FeedItemViewHolder holder;
 
@@ -43,13 +45,12 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         }
 
         @Override
-        protected FeedItem inBackground(Void... params) {
-            return ThreadsManager.getInstance().fetchParseTask(id);
+        protected FeedItem doInBackground(Void... params) {
+            return priorityTaskPool.fetchParseTask(id);
         }
 
         @Override
         protected void onPostExecute(FeedItem feedItem) {
-            super.onPostExecute(feedItem);
             feedItem.drawView(activity, holder, true);
         }
     }
@@ -62,13 +63,12 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         holder.resetSwipeState();
 
         // TODO отсюда можно запускать fetch некоторых item'ов далее
-        if (ThreadsManager.getInstance().isFinished(id)) {
-            ThreadsManager.getInstance()
+        if (priorityTaskPool.isFinished(id)) {
+            priorityTaskPool
                     .fetchParseTask(cursor.getLong(indexColumnId))
                     .drawView(activity, holder, true);
         } else {
-            new GetFeedItemAndDrawViewAsyncTask(id, holder)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new GetFeedItemAndDrawViewAsyncTask(id, holder).execute();
         }
     }
 }

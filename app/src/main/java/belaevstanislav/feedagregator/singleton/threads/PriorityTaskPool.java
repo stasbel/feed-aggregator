@@ -33,7 +33,7 @@ public class PriorityTaskPool extends PriorityThreadPool {
         return taskf;
     }
 
-    public <V extends Task & Callable<T>, T> TaskFuture<T> submitCallableTask(V task) {
+    private  <V extends Task & Callable<T>, T> TaskFuture<T> submitCallableTask(V task) {
         if (task == null) throw new NullPointerException();
         TaskFuture<T> taskf = newTaskFutureFor(task);
         execute(taskf);

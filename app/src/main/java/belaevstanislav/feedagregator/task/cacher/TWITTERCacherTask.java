@@ -1,7 +1,5 @@
 package belaevstanislav.feedagregator.task.cacher;
 
-import android.util.Log;
-
 import belaevstanislav.feedagregator.feeditem.shell.TWITTERFeedItem;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 
@@ -15,7 +13,6 @@ public class TWITTERCacherTask extends CacherTask implements Runnable {
 
     @Override
     public void run() {
-        Log.e("3", "3");
         DatabaseManager.getInstance().insertWithCaching(id, getFeedItem());
     }
 }

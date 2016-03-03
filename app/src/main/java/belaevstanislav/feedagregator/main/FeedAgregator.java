@@ -40,7 +40,7 @@ public class FeedAgregator extends Application {
 
         StorageManager.initialize();
         DatabaseManager.initialize();
-        ThreadsManager.initialize();
         ImagesManager.initialize();
+        ThreadsManager.initialize();
     }
 }

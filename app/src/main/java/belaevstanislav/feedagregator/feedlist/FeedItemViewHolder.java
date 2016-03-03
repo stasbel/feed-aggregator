@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
 import belaevstanislav.feedagregator.main.OnFeedItemOpenListener;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.util.Constant;

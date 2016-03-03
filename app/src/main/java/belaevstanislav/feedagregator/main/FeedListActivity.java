@@ -1,10 +1,15 @@
 package belaevstanislav.feedagregator.main;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +30,10 @@ import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feedlist.FeedListCursorAdapter;
 import belaevstanislav.feedagregator.feedlist.FeedListOnScrollListener;
 import belaevstanislav.feedagregator.feedlist.SwipeCallback;
-import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
+import belaevstanislav.feedagregator.service.DataService;
+import belaevstanislav.feedagregator.service.DataServiceCommand;
+import belaevstanislav.feedagregator.service.Notificator;
+import belaevstanislav.feedagregator.service.NotificatorMessage;
 import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.singleton.storage.StorageKey;
 import belaevstanislav.feedagregator.singleton.storage.StorageManager;
@@ -33,17 +41,26 @@ import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.MyDrawer;
 import belaevstanislav.feedagregator.util.MyToolbar;
-import belaevstanislav.feedagregator.util.asynclatch.AsyncLatch;
-import belaevstanislav.feedagregator.util.asynclatch.onShowFeedListListener;
 import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
-public class FeedListActivity extends AppCompatActivity implements onShowFeedListListener, OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
+public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
     private static FeedListCursorAdapter adapter;
     private RecyclerView feedList;
     private Toolbar toolbar;
     private Drawer drawer;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            NotificatorMessage message = intent.getParcelableExtra(NotificatorMessage.MESSAGE_KEY);
+            switch (message) {
+                case READY_TO_SHOW:
+                    showFeedList();
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,8 +82,12 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             drawer = MyDrawer.createDrawer(this, toolbar);
 
             // swiperefresh
-            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
-            swipeRefreshLayout.setOnRefreshListener(this);
+            (swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh))
+                    .setOnRefreshListener(this);
+
+            // notificator
+            IntentFilter intentFilter = new IntentFilter(Notificator.ACTION);
+            LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
 
             // main
             initializeFeedList();
@@ -76,14 +97,20 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
     @Override
     protected void onStart() {
         super.onStart();
-
         drawer.setSelectionAtPosition(1);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         DatabaseManager.getInstance().close();
+        stopDataService();
+    }
+
+    private void stopDataService() {
+        Intent intent = new Intent(this, DataService.class);
+        stopService(intent);
     }
 
     @Override
@@ -132,6 +159,8 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(feedList);
         feedList.addOnScrollListener(new FeedListOnScrollListener(callback));
+
+        // TODO adadpter -> deserialize old items -> get rid of error
     }
 
     public void fetchFeedItems() {
@@ -140,8 +169,17 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
             DatabaseManager.getInstance().deleteAll();
         }
 
-        AsyncLatch asyncLatch = new AsyncLatch(Constant.SOURCES_COUNT, this);
-        TWITTER.fetchFeedItems(asyncLatch);
+        startFetchingDataService();
+
+        // TODO delete?
+        //AsyncLatch asyncLatch = new AsyncLatch(Constant.SOURCES_COUNT, this);
+        //TWITTER.fetchFeedItems(asyncLatch);
+    }
+
+    private void startFetchingDataService() {
+        Intent intent = new Intent(this, DataService.class);
+        intent.putExtra(DataServiceCommand.COMMAND_KEY, (Parcelable) DataServiceCommand.FETCH_NEW_ITEMS);
+        startService(intent);
     }
 
     private boolean isRecyclerScrollable() {
@@ -151,8 +189,7 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
                 && layoutManager.findLastCompletelyVisibleItemPosition() < adapter.getItemCount() - 1;
     }
 
-    @Override
-    public void onShowFeedList() {
+    public void showFeedList() {
         // get & insert cursor
         Cursor cursor = DatabaseManager.getInstance().getAll();
         adapter = new FeedListCursorAdapter(this, cursor);
@@ -190,6 +227,9 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
     public static class SingleFeedItemActivity extends AppCompatActivity {
         private int position;
         private long id;
+
+        public SingleFeedItemActivity() {
+        }
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -236,6 +276,7 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_delete) {
+                // TODO переделать через inten'ы (и убрать лишний статик у adapter)
                 DatabaseManager.getInstance().delete(id);
                 adapter.swapCursor(DatabaseManager.getInstance().getAll());
                 adapter.notifyItemRemoved(position);
@@ -253,7 +294,13 @@ public class FeedListActivity extends AppCompatActivity implements onShowFeedLis
 // TODO (THREADS) -можно будет переписать все запросы от Picasso в синхронизированном варианте (вставленном в async task) Итог:-
 // TODO (THREADS) -все кроме асинронных логинов из api (<constant штук) будет выполнятся в thread pool'e
 
+// TODO IMPORTANT !!!
+// TODO перенести thread pool в service
+// TODO рзобраться с фsync task ами
+// TODO сделать все из google документа
+
 // TODO NEW
+// TODO global thread safaty
 // TODO внешний вид новости
 // TODO user interface / notifications
 // TODO переписать с fragment'ами для больших экранов

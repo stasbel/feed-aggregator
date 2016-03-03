@@ -9,8 +9,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
-import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
+import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.singleton.images.ImagesManager;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.ParcelableMethod;
@@ -69,7 +69,7 @@ public abstract class FeedItem extends FeedItemCore {
 
     public void drawView(Context context, FeedItemViewHolder holder,
                          boolean isNeedToDrawLogoImage) {
-        try{
+        try {
             drawHead(context, holder, isNeedToDrawLogoImage);
             drawContent(context, holder);
         } catch (Exception exception) {

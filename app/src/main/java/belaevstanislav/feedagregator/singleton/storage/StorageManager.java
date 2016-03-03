@@ -6,6 +6,9 @@ import belaevstanislav.feedagregator.singleton.SignletonManager;
 public class StorageManager implements SignletonManager {
     private static Storage storage;
 
+    private StorageManager() {
+    }
+
     public static void initialize() {
         storage = new Storage(FeedAgregator.getContext());
     }

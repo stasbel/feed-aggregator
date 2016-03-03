@@ -11,6 +11,6 @@ public class PriorityThreadPool extends ThreadPoolExecutor {
     protected PriorityThreadPool(int numberOfThreads, int queueInitialCapacity) {
         super(numberOfThreads, numberOfThreads, 0L, TimeUnit.MILLISECONDS,
                 new PriorityBlockingQueue<Runnable>(queueInitialCapacity, new TaskComparator()),
-                new NormPriorityThreadFactory());
+                new BackgroundThreadFactory());
     }
 }

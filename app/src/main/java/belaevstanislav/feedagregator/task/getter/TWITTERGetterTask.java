@@ -1,6 +1,5 @@
 package belaevstanislav.feedagregator.task.getter;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.twitter.sdk.android.core.Callback;
@@ -10,46 +9,50 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CountDownLatch;
 
-import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
 import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
+import belaevstanislav.feedagregator.service.Latch;
+import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
+import belaevstanislav.feedagregator.singleton.database.UnReadFeedItemDatabaseHelper;
 import belaevstanislav.feedagregator.singleton.storage.StorageKey;
 import belaevstanislav.feedagregator.singleton.storage.StorageManager;
-import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.singleton.threads.PriorityTaskPool;
+import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.task.parser.TWITTERParserTask;
-import belaevstanislav.feedagregator.util.asynclatch.AsyncLatch;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.HighPriorityAsyncTask;
 
 public class TWITTERGetterTask extends GetterTask implements Runnable {
-    private final AsyncLatch asyncLatch;
+    private final Latch latch;
+    private final UnReadFeedItemDatabaseHelper databaseHelper;
+    private final PriorityTaskPool priorityTaskPool;
 
-    public TWITTERGetterTask(AsyncLatch asyncLatch) {
-        this.asyncLatch = asyncLatch;
+    public TWITTERGetterTask(Latch latch) {
+        this.latch = latch;
+        this.databaseHelper = DatabaseManager.getInstance();
+        this.priorityTaskPool = ThreadsManager.getInstance();
     }
 
     private class HandleItemTask extends GetterTask implements Runnable {
         private final Tweet tweet;
+        private final CountDownLatch countDownLatch;
 
-        public HandleItemTask(Tweet tweet) {
+        public HandleItemTask(Tweet tweet, CountDownLatch countDownLatch) {
             this.tweet = tweet;
+            this.countDownLatch = countDownLatch;
         }
 
         @Override
         public void run() {
-            Log.e("1.3", "1.3");
             try {
                 TWITTERFeedItemCore core = new TWITTERFeedItemCore(tweet);
+                long id = databaseHelper.insertWithoutCaching(core);
+                countDownLatch.countDown();
 
-                long id = DatabaseManager.getInstance().insertWithoutCaching(core);
-
-                ThreadsManager.getInstance().submitParseTask(id, new TWITTERParserTask(core, tweet, id));
+                priorityTaskPool.submitParseTask(id, new TWITTERParserTask(core, tweet, id));
             } catch (ParseException parseException) {
-                Log.e("TWITTER", "TWITTER_PARSE_EXCEPTION");
+                Log.e("TWITTER", "TWITTER_PARSECORE_EXCEPTION");
                 parseException.printStackTrace();
             }
         }
@@ -64,86 +67,59 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
 
         @Override
         public void run() {
-            Log.e("1.2", "1.2");
             List<Tweet> tweetList = result.data;
             int size = tweetList.size();
-            Log.e("size", String.valueOf(size));
             if (size > 0) {
                 StorageManager.getInstance().saveLong(StorageKey.LAST_TWEET_ID, tweetList.get(0).getId());
 
-                ArrayList<Future<?>> tasks = new ArrayList<>(size);
-
-                PriorityTaskPool priorityTaskPool = ThreadsManager.getInstance();
+                CountDownLatch countDownLatch = new CountDownLatch(size);
                 for (int index = 0; index < size; index++) {
-                    tasks.add(priorityTaskPool.submitRunnableTask(new HandleItemTask(tweetList.get(index))));
+                    priorityTaskPool.submitRunnableTask(new HandleItemTask(tweetList.get(index), countDownLatch));
                 }
 
                 try {
-                    for (Future<?> task : tasks) {
-                        task.get();
-                    }
-                } catch (Exception exception) {
+                    countDownLatch.await();
+                } catch (InterruptedException exception) {
                     Log.e("TWITTER", "TWITTER_THREADS_EXCEPTION");
                     exception.printStackTrace();
                 }
+                latch.countDownAndTryNotify();
             }
-        }
-    }
-
-    private class HandleResultAsyncTask extends HighPriorityAsyncTask<Void, Void, Void> {
-        private final Result<List<Tweet>> result;
-
-        public HandleResultAsyncTask(Result<List<Tweet>> result) {
-            this.result = result;
-        }
-
-        @Override
-        protected Void inBackground(Void... params) {
-            try {
-                ThreadsManager.getInstance().submitRunnableTask(new HandleItemsTask(result)).get();
-            } catch (Exception exception) {
-                Log.e("TWITTER", "TWITTER_THREADS_EXCEPTION");
-                exception.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.e("TW", "TW");
-            asyncLatch.countDownAndTryInvoke();
         }
     }
 
     @Override
     public void run() {
-        Log.e("1.1", "1.1");
-        // TODO реализовать проход по страницам (результатов может быть больше, чем 200)
+        // TODO реализовать проход по страницам (результатов может быть больше, чем 200) + id
         Integer number;
-        Long id;
+        //Long id;
         if (!StorageManager.getInstance().isInMemory(StorageKey.LAST_TWEET_ID)) {
             number = Constant.FIRST_TWITTER_QUERY_PAGE_SIZE;
-            id = null;
+            //id = null;
         } else {
             number = Constant.MAX_TWEETS_PER_PAGE;
             // TODO delete 10000000
-            id = StorageManager.getInstance().getLong(StorageKey.LAST_TWEET_ID) - 100000000;
+            //id = StorageManager.getInstance().getLong(StorageKey.LAST_TWEET_ID) - 100000000;
         }
-        TwitterCore.getInstance().getApiClient().getStatusesService().homeTimeline(
-                number, null, null, null, null, null, null,
-                new Callback<List<Tweet>>() {
-                    @Override
-                    public void success(Result<List<Tweet>> result) {
-                        new HandleResultAsyncTask(result).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    }
 
-                    @Override
-                    public void failure(TwitterException twitterException) {
-                        Log.e("TWITTER", "TWITTER_GET_EXCEPTION");
-                        twitterException.printStackTrace();
-                    }
-                }
-        );
+        TwitterCore
+                .getInstance()
+                .getApiClient()
+                .getStatusesService()
+                .homeTimeline(number, null, null, null, null, null, null, new TWITTERCallback());
+    }
+
+    private class TWITTERCallback extends Callback<List<Tweet>> {
+        @Override
+        public void success(Result<List<Tweet>> result) {
+            priorityTaskPool.submitRunnableTask(new HandleItemsTask(result));
+        }
+
+        @Override
+        public void failure(TwitterException twitterException) {
+            Log.e("TWITTER", "TWITTER_GET_EXCEPTION");
+            twitterException.printStackTrace();
+        }
     }
 }
+

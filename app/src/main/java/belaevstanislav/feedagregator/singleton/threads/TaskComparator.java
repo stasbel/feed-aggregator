@@ -2,9 +2,9 @@ package belaevstanislav.feedagregator.singleton.threads;
 
 import java.util.Comparator;
 
+import belaevstanislav.feedagregator.task.Task;
 import belaevstanislav.feedagregator.task.cacher.CacherTask;
 import belaevstanislav.feedagregator.task.parser.ParserTask;
-import belaevstanislav.feedagregator.task.Task;
 
 // TODO (#нерешаемое) от предупреждения не избавиться
 @SuppressWarnings("unused")
