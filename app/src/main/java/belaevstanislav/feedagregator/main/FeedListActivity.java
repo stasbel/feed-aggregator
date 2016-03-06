@@ -44,8 +44,8 @@ import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
 public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
-    private Data data;
     private static FeedListCursorAdapter adapter;
+    private Data data;
     private RecyclerView feedList;
     private Toolbar toolbar;
     private Drawer drawer;
@@ -73,13 +73,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
             data = ((FeedAgregator) getApplication()).getData();
 
             // toolbar
-            toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayShowTitleEnabled(false);
-                actionBar.setDisplayHomeAsUpEnabled(true);
-            }
+            initializeToolbar();
 
             // drawer
             drawer = MyDrawer.createDrawer(this, toolbar);
@@ -153,7 +147,17 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         fetchFeedItems();
     }
 
-    public void initializeFeedList() {
+    private void initializeToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private void initializeFeedList() {
         feedList = (RecyclerView) findViewById(R.id.feed_list);
         feedList.setHasFixedSize(true);
         feedList.setLayoutManager(new LinearLayoutManager(this));
@@ -166,7 +170,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         // TODO adadpter -> deserialize old items -> get rid of error
     }
 
-    public void fetchFeedItems() {
+    private void fetchFeedItems() {
         // TODO не удалять старые, a десерализовать
         if (!data.storage.getBoolean(StorageKey.IS_SAVE_NEWS)) {
             data.database.deleteAll();
@@ -192,7 +196,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 && layoutManager.findLastCompletelyVisibleItemPosition() < adapter.getItemCount() - 1;
     }
 
-    public void showFeedList() {
+    private void showFeedList() {
         // get & insert cursor
         Cursor cursor = data.database.getAll();
         adapter = new FeedListCursorAdapter(cursor, data, this);
@@ -283,7 +287,6 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_delete) {
-                // TODO переделать через inten'ы (и убрать лишний статик у adapter)
                 data.database.delete(id);
                 adapter.deleteFeedItem(position);
                 onBackPressed();
@@ -294,12 +297,10 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     }
 }
 
+// TODO IMPORTANT
+// TODO десеаризация старых
 // TODO ???
-// TODO singletonы + десеаризация старых
 // TODO сделать все из google документа
-
-// TODO IMPORTANT !!!
-// TODO сделать методы в activity красивее и логичнее
 // TODO переработать thread pool и task'и
 
 // TODO NEW

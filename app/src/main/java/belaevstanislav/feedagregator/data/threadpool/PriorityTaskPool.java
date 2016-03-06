@@ -10,7 +10,7 @@ import belaevstanislav.feedagregator.data.threadpool.task.Task;
 import belaevstanislav.feedagregator.data.threadpool.task.parser.ParserTask;
 
 public class PriorityTaskPool extends PriorityThreadPool {
-    private final HashMap<Long, TaskFuture<FeedItem>> taskMap;
+    private final HashMap<Long, FutureTaskWrapper<FeedItem>> taskMap;
 
     public PriorityTaskPool() {
         // TODO надо что-то сделать с capacity
@@ -18,30 +18,30 @@ public class PriorityTaskPool extends PriorityThreadPool {
         this.taskMap = new HashMap<>();
     }
 
-    private <V extends Task & Runnable, T> TaskFuture<T> newTaskFutureFor(V task, T value) {
-        return new TaskFuture<>(task, value);
+    private <V extends Task & Runnable, T> FutureTaskWrapper<T> newTaskFutureFor(V task, T value) {
+        return new FutureTaskWrapper<>(task, value);
     }
 
-    private <V extends Task & Callable<T>, T> TaskFuture<T> newTaskFutureFor(V task) {
-        return new TaskFuture<>(task);
+    private <V extends Task & Callable<T>, T> FutureTaskWrapper<T> newTaskFutureFor(V task) {
+        return new FutureTaskWrapper<>(task);
     }
 
-    public <V extends Task & Runnable> TaskFuture<?> submitRunnableTask(V task) {
+    public <V extends Task & Runnable> FutureTaskWrapper<?> submitRunnableTask(V task) {
         if (task == null) throw new NullPointerException();
-        TaskFuture<Void> taskf = newTaskFutureFor(task, null);
+        FutureTaskWrapper<Void> taskf = newTaskFutureFor(task, null);
         execute(taskf);
         return taskf;
     }
 
-    private  <V extends Task & Callable<T>, T> TaskFuture<T> submitCallableTask(V task) {
+    private  <V extends Task & Callable<T>, T> FutureTaskWrapper<T> submitCallableTask(V task) {
         if (task == null) throw new NullPointerException();
-        TaskFuture<T> taskf = newTaskFutureFor(task);
+        FutureTaskWrapper<T> taskf = newTaskFutureFor(task);
         execute(taskf);
         return taskf;
     }
 
-    public <V extends ParserTask & Callable<FeedItem>> void submitParseTask(long id, V task) {
-        taskMap.put(id, submitCallableTask(task));
+    public <V extends ParserTask & Callable<FeedItem>> void submitParserTask(V task) {
+        taskMap.put(task.getId(), submitCallableTask(task));
     }
 
     public boolean isFinished(long id) {

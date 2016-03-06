@@ -19,7 +19,7 @@ public abstract class ParserTask extends Task {
         return core;
     }
 
-    protected long getId() {
+    public long getId() {
         return id;
     }
 }

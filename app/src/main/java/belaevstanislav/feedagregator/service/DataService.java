@@ -7,7 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.service.util.Latch;
-import belaevstanislav.feedagregator.service.feedsource.twitter.TWITTER;
+import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
 import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.util.Constant;
 

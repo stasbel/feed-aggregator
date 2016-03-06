@@ -9,9 +9,9 @@ import belaevstanislav.feedagregator.data.threadpool.task.parser.ParserTask;
 
 // TODO (#нерешаемое) от предупреждения не избавиться
 @SuppressWarnings("unused")
-public class TaskComparator<Runnable> implements Comparator<TaskFuture<?>> {
+public class TaskComparator<Runnable> implements Comparator<FutureTaskWrapper<?>> {
     @Override
-    public int compare(TaskFuture<?> lhs, TaskFuture<?> rhs) {
+    public int compare(FutureTaskWrapper<?> lhs, FutureTaskWrapper<?> rhs) {
         Task leftTask = lhs.getTask();
         Task rightTask = rhs.getTask();
         TaskPriority leftPriority = leftTask.getTaskPriority();

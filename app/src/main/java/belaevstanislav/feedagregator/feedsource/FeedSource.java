@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.service.feedsource;
+package belaevstanislav.feedagregator.feedsource;
 
 
 // TODO сделать нормальный класс с конструктором для каждого источника

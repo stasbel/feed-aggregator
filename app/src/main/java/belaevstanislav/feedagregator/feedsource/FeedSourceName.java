@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.service.feedsource;
+package belaevstanislav.feedagregator.feedsource;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PriorityThreadPool extends ThreadPoolExecutor {
     // TODO multiple nthreads by 2?
-    // TODO (#нерешаемое) гарантия того, что в очередь мы передаем только наследников Task (фактически, мы передаем только TaskFuture)
+    // TODO (#нерешаемое) гарантия того, что в очередь мы передаем только наследников Task (фактически, мы передаем только FutureTaskWrapper)
     @SuppressWarnings("all")
     protected PriorityThreadPool(int numberOfThreads, int queueInitialCapacity) {
         super(numberOfThreads, numberOfThreads, 0L, TimeUnit.MILLISECONDS,

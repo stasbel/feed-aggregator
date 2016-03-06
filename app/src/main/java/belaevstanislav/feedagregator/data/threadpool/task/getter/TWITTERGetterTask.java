@@ -44,7 +44,7 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
                 long id = getData().database.insertCore(core);
                 countDownLatch.countDown();
 
-                getData().taskPool.submitParseTask(id, new TWITTERParserTask(getData(), core, id, tweet));
+                getData().taskPool.submitParserTask(new TWITTERParserTask(getData(), core, id, tweet));
             } catch (ParseException parseException) {
                 Log.e("TWITTER", "TWITTER_PARSECORE_EXCEPTION");
                 parseException.printStackTrace();

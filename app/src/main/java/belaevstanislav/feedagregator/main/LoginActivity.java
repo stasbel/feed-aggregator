@@ -7,14 +7,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
 import belaevstanislav.feedagregator.util.MyToolbar;
 
 public class LoginActivity extends AppCompatActivity {
@@ -31,30 +30,9 @@ public class LoginActivity extends AppCompatActivity {
             MyToolbar.setToolbar(this);
 
             // login button(s)
-            ImageButton imageButtonTWITTER = (ImageButton) findViewById(R.id.twitter_login_button);
-            imageButtonTWITTER.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Twitter.getSessionManager().getActiveSession() == null
-                            || Twitter.getSessionManager().getActiveSession().getAuthToken().isExpired()) {
-                        twitterAuthClient = new TwitterAuthClient();
-                        twitterAuthClient.authorize(LoginActivity.this, new Callback<TwitterSession>() {
-                            @Override
-                            public void success(Result<TwitterSession> result) {
-                                //...
-                            }
-
-                            @Override
-                            public void failure(TwitterException e) {
-                                //...
-                            }
-                        });
-                    } else {
-                        Toast toast = Toast.makeText(LoginActivity.this, "Already login in TWITTER!", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }
-            });
+            ImageButton loginButtonTWITTER = (ImageButton) findViewById(R.id.twitter_login_button);
+            twitterAuthClient = new TwitterAuthClient();
+            loginButtonTWITTER.setOnClickListener(new TWITTERLoginCliclListener());
         }
     }
 
@@ -62,5 +40,24 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         twitterAuthClient.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private class TWITTERLoginCliclListener implements View.OnClickListener {
+        @Override public void onClick(View v) {
+            TWITTER.login(LoginActivity.this, twitterAuthClient, new TWITTER.LoginCallback() {
+                @Override public void onSuccess(Result<TwitterSession> result) {
+                    // ...
+                }
+
+                @Override public void onFail(TwitterException e) {
+                    // ...
+                }
+
+                @Override public void onAllreadyLoginIn() {
+                    Toast toast = Toast.makeText(LoginActivity.this, "Already login in TWITTER!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
+        }
     }
 }
