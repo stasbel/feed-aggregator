@@ -7,7 +7,7 @@ import com.twitter.sdk.android.core.models.Tweet;
 
 import java.text.ParseException;
 
-import belaevstanislav.feedagregator.feedsource.FeedSourceName;
+import belaevstanislav.feedagregator.service.feedsource.FeedSourceName;
 import belaevstanislav.feedagregator.util.Constant;
 
 public class TWITTERFeedItemCore extends FeedItemCore {

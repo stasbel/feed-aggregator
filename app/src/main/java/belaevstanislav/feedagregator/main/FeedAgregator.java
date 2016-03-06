@@ -8,18 +8,16 @@ import com.crashlytics.android.answers.Answers;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
-import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
-import belaevstanislav.feedagregator.singleton.images.ImagesManager;
-import belaevstanislav.feedagregator.singleton.storage.StorageManager;
-import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
+import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.util.Constant;
 import io.fabric.sdk.android.Fabric;
 
 public class FeedAgregator extends Application {
     private static Context context;
+    private Data data;
 
-    public FeedAgregator() {
-        context = this;
+    public Data getData() {
+        return data;
     }
 
     public static Context getContext() {
@@ -30,6 +28,13 @@ public class FeedAgregator extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // context
+        context = this;
+
+        // data
+        data = new Data(this);
+
+        // twitter
         TwitterAuthConfig twitterAuthConfig = new TwitterAuthConfig(Constant.TWITTER_API_KEY,
                 Constant.TWITTER_API_SECRET);
         Fabric fabric = new Fabric.Builder(this)
@@ -37,10 +42,5 @@ public class FeedAgregator extends Application {
                 .debuggable(true)
                 .build();
         Fabric.with(fabric);
-
-        StorageManager.initialize();
-        DatabaseManager.initialize();
-        ImagesManager.initialize();
-        ThreadsManager.initialize();
     }
 }

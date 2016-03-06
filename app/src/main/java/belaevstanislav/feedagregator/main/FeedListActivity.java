@@ -25,6 +25,8 @@ import android.view.View;
 import com.mikepenz.materialdrawer.Drawer;
 
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.data.Data;
+import belaevstanislav.feedagregator.data.storage.StorageKey;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feedlist.FeedListCursorAdapter;
@@ -34,17 +36,15 @@ import belaevstanislav.feedagregator.service.DataService;
 import belaevstanislav.feedagregator.service.DataServiceCommand;
 import belaevstanislav.feedagregator.service.Notificator;
 import belaevstanislav.feedagregator.service.NotificatorMessage;
-import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
-import belaevstanislav.feedagregator.singleton.storage.StorageKey;
-import belaevstanislav.feedagregator.singleton.storage.StorageManager;
-import belaevstanislav.feedagregator.singleton.threads.ThreadsManager;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.MyDrawer;
 import belaevstanislav.feedagregator.util.MyToolbar;
+import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
 import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
 public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
+    private Data data;
     private static FeedListCursorAdapter adapter;
     private RecyclerView feedList;
     private Toolbar toolbar;
@@ -68,6 +68,9 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 
         if (savedInstanceState == null) {
             setContentView(R.layout.feed_list_layout);
+
+            // data
+            data = ((FeedAgregator) getApplication()).getData();
 
             // toolbar
             toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -104,7 +107,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        DatabaseManager.getInstance().close();
+        data.database.close();
         stopDataService();
     }
 
@@ -158,15 +161,15 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         SwipeCallback callback = new SwipeCallback();
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(feedList);
-        feedList.addOnScrollListener(new FeedListOnScrollListener(callback));
+        feedList.addOnScrollListener(new FeedListOnScrollListener(this, callback));
 
         // TODO adadpter -> deserialize old items -> get rid of error
     }
 
     public void fetchFeedItems() {
         // TODO не удалять старые, a десерализовать
-        if (!StorageManager.getInstance().getBoolean(StorageKey.IS_SAVE_NEWS)) {
-            DatabaseManager.getInstance().deleteAll();
+        if (!data.storage.getBoolean(StorageKey.IS_SAVE_NEWS)) {
+            data.database.deleteAll();
         }
 
         startFetchingDataService();
@@ -191,12 +194,12 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 
     public void showFeedList() {
         // get & insert cursor
-        Cursor cursor = DatabaseManager.getInstance().getAll();
-        adapter = new FeedListCursorAdapter(this, cursor);
+        Cursor cursor = data.database.getAll();
+        adapter = new FeedListCursorAdapter(cursor, data, this);
         feedList.setAdapter(adapter);
 
         // renember last time & remove loading bar
-        StorageManager.getInstance().saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
+        data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
         swipeRefreshLayout.setRefreshing(false);
 
         // scroll flags
@@ -218,13 +221,14 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         HelpfullMethod.createActivity(this, SingleFeedItemActivity.class, new IntentModifier() {
             @Override
             public void modify(Intent intent) {
-                intent.putExtra(Constant.FEED_ITEM_ID_POSITION, position);
+                intent.putExtra(Constant.FEED_ITEM_POSITION_KEY, position);
                 intent.putExtra(Constant.FEED_ITEM_ID_KEY, id);
             }
         });
     }
 
     public static class SingleFeedItemActivity extends AppCompatActivity {
+        private Data data;
         private int position;
         private long id;
 
@@ -238,16 +242,19 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
             if (savedInstanceState == null) {
                 setContentView(R.layout.single_feed_item_layout);
 
+                // data
+                data = ((FeedAgregator) getApplication()).getData();
+
                 // toolbar
                 MyToolbar.setToolbar(this);
 
                 // feeditem
                 Bundle bundle = getIntent().getExtras();
-                position = bundle.getInt(Constant.FEED_ITEM_ID_POSITION);
+                position = bundle.getInt(Constant.FEED_ITEM_POSITION_KEY);
                 id = bundle.getLong(Constant.FEED_ITEM_ID_KEY);
-                FeedItem feedItem = ThreadsManager.getInstance().fetchParseTask(id);
+                FeedItem feedItem = data.taskPool.fetchParseTask(id);
                 View view = findViewById(android.R.id.content);
-                FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, null, view);
+                FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, data, null, view);
                 feedItem.drawView(this, viewHolder, true);
             }
         }
@@ -277,9 +284,8 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_delete) {
                 // TODO переделать через inten'ы (и убрать лишний статик у adapter)
-                DatabaseManager.getInstance().delete(id);
-                adapter.swapCursor(DatabaseManager.getInstance().getAll());
-                adapter.notifyItemRemoved(position);
+                data.database.delete(id);
+                adapter.deleteFeedItem(position);
                 onBackPressed();
             }
 
@@ -288,18 +294,16 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     }
 }
 
-// TODO (THREADS) все с приоритетами надо переписывать: нужен thread pool executor, который принимает asynk task, runnable, callable, сравнивает-
-// TODO (THREADS) -своим компаратором, является fixed thread pool из 2*CORES + 1 thread'ов, и умно раздает Process.setThreadPrority в threadFactory-
-// TODO (THREADS) -(backgroud или foreground (обратно пропорционально объему работы и в соствествие с приоритетом) или еще чего), тогда-
-// TODO (THREADS) -можно будет переписать все запросы от Picasso в синхронизированном варианте (вставленном в async task) Итог:-
-// TODO (THREADS) -все кроме асинронных логинов из api (<constant штук) будет выполнятся в thread pool'e
-
-// TODO IMPORTANT !!!
-// TODO перенести thread pool в service
-// TODO рзобраться с фsync task ами
+// TODO ???
+// TODO singletonы + десеаризация старых
 // TODO сделать все из google документа
 
+// TODO IMPORTANT !!!
+// TODO сделать методы в activity красивее и логичнее
+// TODO переработать thread pool и task'и
+
 // TODO NEW
+// TODO feed source class
 // TODO global thread safaty
 // TODO внешний вид новости
 // TODO user interface / notifications
@@ -314,3 +318,5 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 // TODO threads
 // TODO везде настроить время + youtube через многопотоков потоки + обработка в потоках
 // TODO infinite loop при нулевом запросе и при запросе только в вк
+// TODO свой view
+// TODO content provider?

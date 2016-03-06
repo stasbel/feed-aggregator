@@ -1,6 +1,5 @@
 package belaevstanislav.feedagregator.feedlist;
 
-import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -11,13 +10,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import belaevstanislav.feedagregator.R;
-import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
-import belaevstanislav.feedagregator.main.OnFeedItemOpenListener;
-import belaevstanislav.feedagregator.singleton.database.DatabaseManager;
+import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.util.Constant;
+import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
 
 public class FeedItemViewHolder extends RecyclerView.ViewHolder {
-    private final CursorRecyclerViewAdapter<FeedItemViewHolder> cursorRecyclerViewAdapter;
+    private final Data data;
+    private final FeedListCursorAdapter feedListCursorAdapter;
     private final OnFeedItemOpenListener onFeedItemOpenListener;
     private final ImageView backgroundView;
     private final View foregroundView;
@@ -27,11 +26,12 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     private final ImageView logo;
     private final LinearLayout content;
 
-    public FeedItemViewHolder(CursorRecyclerViewAdapter<FeedItemViewHolder> cursorRecyclerViewAdapter,
-                              Activity activity, View itemView) {
+    public FeedItemViewHolder(FeedListCursorAdapter feedListCursorAdapter, Data data,
+                              OnFeedItemOpenListener onFeedItemOpenListener, View itemView) {
         super(itemView);
-        this.cursorRecyclerViewAdapter = cursorRecyclerViewAdapter;
-        this.onFeedItemOpenListener = (OnFeedItemOpenListener) activity;
+        this.data = data;
+        this.feedListCursorAdapter = feedListCursorAdapter;
+        this.onFeedItemOpenListener = onFeedItemOpenListener;
         this.backgroundView = (ImageView) itemView.findViewById(R.id.feed_item_backgroud);
         backgroundView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,15 +87,14 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         // TODO getLayoutPosition (заменить везде, где можно))? выполнять удаление лениво для ускорения?
         // TODO добавить анимацию удаления
         int position = getAdapterPosition();
-        DatabaseManager.getInstance().delete(getId());
-        cursorRecyclerViewAdapter.swapCursor(DatabaseManager.getInstance().getAll());
-        cursorRecyclerViewAdapter.notifyItemRemoved(position);
+        data.database.delete(getId());
+        feedListCursorAdapter.deleteFeedItem(position);
     }
 
     public void open() {
         int position = getAdapterPosition();
         onFeedItemOpenListener.onOpen(position, getId());
-        cursorRecyclerViewAdapter.notifyItemChanged(position);
+        feedListCursorAdapter.notifyItemChanged(position);
     }
 
     // swipe

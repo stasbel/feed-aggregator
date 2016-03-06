@@ -1,18 +1,18 @@
 package belaevstanislav.feedagregator.feedlist;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
-import belaevstanislav.feedagregator.main.FeedAgregator;
-import belaevstanislav.feedagregator.singleton.images.ImagesManager;
-
 public class FeedListOnScrollListener extends RecyclerView.OnScrollListener {
+    private final Context context;
     private final Picasso picasso;
     private final SwipeCallback swipeCallback;
 
-    public FeedListOnScrollListener(SwipeCallback swipeCallback) {
-        this.picasso = ImagesManager.getInstance();
+    public FeedListOnScrollListener(Context context, SwipeCallback swipeCallback) {
+        this.context = context;
+        this.picasso = Picasso.with(context);
         this.swipeCallback = swipeCallback;
     }
 
@@ -28,9 +28,9 @@ public class FeedListOnScrollListener extends RecyclerView.OnScrollListener {
 
         // TODO нужно ли?
         if (newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-            picasso.resumeTag(FeedAgregator.getContext());
+            picasso.resumeTag(context);
         } else {
-            picasso.pauseTag(FeedAgregator.getContext());
+            picasso.pauseTag(context);
         }
     }
 }

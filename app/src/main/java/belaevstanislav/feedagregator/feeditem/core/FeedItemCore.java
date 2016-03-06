@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import belaevstanislav.feedagregator.feedsource.FeedSourceName;
+import belaevstanislav.feedagregator.service.feedsource.FeedSourceName;
 
 public abstract class FeedItemCore implements Comparable<FeedItemCore>, Parcelable {
     private final long date;

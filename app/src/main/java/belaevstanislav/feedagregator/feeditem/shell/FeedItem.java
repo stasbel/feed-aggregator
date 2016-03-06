@@ -11,18 +11,23 @@ import java.util.Date;
 
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
-import belaevstanislav.feedagregator.singleton.images.ImagesManager;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.ParcelableMethod;
+import belaevstanislav.feedagregator.service.util.ParcelableMethod;
 
 public abstract class FeedItem extends FeedItemCore {
+    private final long id;
     private final String authorName;
     private final String authorImageUrl;
 
-    protected FeedItem(FeedItemCore core, String authorName, String authorImageUrl) {
+    protected FeedItem(FeedItemCore core, long id, String authorName, String authorImageUrl) {
         super(core);
+        this.id = id;
         this.authorName = authorName;
         this.authorImageUrl = authorImageUrl;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getAuthorName() {
@@ -37,7 +42,7 @@ public abstract class FeedItem extends FeedItemCore {
 
     private void drawHead(Context context, FeedItemViewHolder holder,
                           boolean isNeedToDrawLogoImage) throws Exception {
-        ImagesManager.getInstance().load(getAuthorImageUrl()).priority(Picasso.Priority.HIGH).fit().tag(context).into(holder.getAuthorImageView());
+        Picasso.with(context).load(getAuthorImageUrl()).fit().tag(context).into(holder.getAuthorImageView());
         holder.getAuthorNameView().setText(getAuthorName());
         holder.getDateView().setText(Constant.FEED_ITEM_HEAD_TIME_PATTERN.format(new Date(getDate() * 1000L)));
         if (isNeedToDrawLogoImage) {
@@ -81,12 +86,14 @@ public abstract class FeedItem extends FeedItemCore {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeLong(id);
         dest.writeString(authorName);
         dest.writeString(authorImageUrl);
     }
 
     protected FeedItem(Parcel in) {
         super(in);
+        id = in.readLong();
         authorName = in.readString();
         authorImageUrl = in.readString();
     }

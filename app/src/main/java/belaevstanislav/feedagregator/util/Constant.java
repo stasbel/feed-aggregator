@@ -25,7 +25,7 @@ public class Constant {
     }
 
     // INTENTKEYS
-    public static final String FEED_ITEM_ID_POSITION = "position";
+    public static final String FEED_ITEM_POSITION_KEY = "position";
     public static final String FEED_ITEM_ID_KEY = "id";
 
     // DATASERVICE

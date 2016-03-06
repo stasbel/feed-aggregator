@@ -16,17 +16,14 @@ import com.twitter.sdk.android.core.models.UrlEntity;
 import java.text.ParseException;
 
 import belaevstanislav.feedagregator.R;
-import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
-import belaevstanislav.feedagregator.singleton.images.ImagesManager;
+import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
 
 public class TWITTERFeedItem extends FeedItem {
     private final String text;
     private final String imageUrl;
 
-    public TWITTERFeedItem(TWITTERFeedItemCore core, Tweet tweet) throws ParseException {
-        super(core,
-                tweet.user.name,
-                tweet.user.profileImageUrl);
+    public TWITTERFeedItem(FeedItemCore core, long id, Tweet tweet) throws ParseException {
+        super(core, id, tweet.user.name, tweet.user.profileImageUrl);
 
         TweetEntities entities = tweet.entities;
 
@@ -65,7 +62,7 @@ public class TWITTERFeedItem extends FeedItem {
 
         if (imageUrl != null) {
             ImageView imageView = new ImageView(context);
-            ImagesManager.getInstance().load(imageUrl).priority(Picasso.Priority.HIGH).tag(context).into(imageView);
+            Picasso.with(context).load(imageUrl).tag(context).into(imageView);
             content.addView(imageView);
         }
     }
