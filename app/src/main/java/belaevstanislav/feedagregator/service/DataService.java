@@ -6,9 +6,11 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 
 import belaevstanislav.feedagregator.data.Data;
-import belaevstanislav.feedagregator.service.util.Latch;
+import belaevstanislav.feedagregator.data.storage.StorageKey;
+import belaevstanislav.feedagregator.data.threadpool.task.deserializer.DeserializerTask;
 import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
 import belaevstanislav.feedagregator.main.FeedAgregator;
+import belaevstanislav.feedagregator.service.util.Latch;
 import belaevstanislav.feedagregator.util.Constant;
 
 public class DataService extends Service {
@@ -26,12 +28,24 @@ public class DataService extends Service {
         DataServiceCommand command = intent.getParcelableExtra(DataServiceCommand.COMMAND_KEY);
         switch (command) {
             case FETCH_NEW_ITEMS:
-                Latch latch = new Latch(Constant.SOURCES_COUNT, notificator);
-                TWITTER.fetchFeedItems(data, latch);
+                fetchNewItems();
+                break;
+            case DESEREALIZE_ITEMS:
+                deserializeItems();
                 break;
         }
 
         return START_NOT_STICKY;
+    }
+
+    private void fetchNewItems() {
+        boolean isNeedToCache = data.storage.isInMemory(StorageKey.IS_SAVE_NEWS);
+        Latch latch = new Latch(Constant.FEEDSOURCE_COUNT, notificator);
+        TWITTER.fetchFeedItems(data, latch, isNeedToCache);
+    }
+
+    private void deserializeItems() {
+        data.taskPool.submitRunnableTask(new DeserializerTask(data, notificator));
     }
 
     @Override

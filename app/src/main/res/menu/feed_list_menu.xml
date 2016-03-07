@@ -4,8 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".main.FeedListActivity">
     <item
+        android:id="@+id/action_delete_all"
+        android:icon="@drawable/ic_done_all_white_48dp"
+        android:title="@null"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_refresh"
         android:icon="@drawable/ic_cached_white_48dp"
         android:title="@null"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>

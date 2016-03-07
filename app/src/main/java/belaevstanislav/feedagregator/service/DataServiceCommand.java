@@ -6,7 +6,8 @@ import android.os.Parcelable;
 import belaevstanislav.feedagregator.util.Constant;
 
 public enum DataServiceCommand implements Parcelable {
-    FETCH_NEW_ITEMS;
+    FETCH_NEW_ITEMS,
+    DESEREALIZE_ITEMS;
 
     public static final String COMMAND_KEY = Constant.DATASERVICE_COMMAND_KEY;
 

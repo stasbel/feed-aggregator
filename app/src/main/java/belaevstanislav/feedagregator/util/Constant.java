@@ -43,23 +43,22 @@ public class Constant {
     public static final boolean STORAGE_DEFAULT_IS_SAVE_NEWS = true;
 
     // FEEDSOURCE
-    public static final int SOURCES_COUNT = 1;
+    public static final int FEEDSOURCE_COUNT = 1;
 
     // DATABASE
     public static final String DATABASE_NAME = "UnReadFeedItem.db";
-    public static final int DATABASE_VERSION = 6;
-    public static final String COMMON_INFORMATION_TABLE_NAME = "common_information";
-    public static final String FEED_ITEM_BYTECODE_TABLE_NAME = "feed_item_bytecode";
-    public static final String KEY_TABLE_ID = "_id";
-    public static final String KEY_TABLE_TIME = "time";
-    public static final String KEY_TABLE_SOURCE = "source";
-    public static final String KEY_TABLE_BYTECODE = "bytecode";
+    public static final int DATABASE_VERSION = 7;
+    public static final String DATABASE_COMMON_INFORMATION_TABLE_NAME = "common_information";
+    public static final String DATABASE_FEED_ITEM_BYTECODE_TABLE_NAME = "bytecode";
+    public static final String DATABASE_KEY_TABLE_ID = "_id";
+    public static final String DATABASE_KEY_TABLE_TIME = "time";
+    public static final String DATABASE_KEY_TABLE_SOURCE = "source";
+    public static final String DATABASE_KEY_TABLE_BYTECODE = "bytecode";
 
     // TWITTER
     public static final String TWITTER_API_KEY = resources.getString(R.string.twitter_api_key);
     public static final String TWITTER_API_SECRET = resources.getString(R.string.twitter_api_sercet);
-    // TODO change to 200
-    public static final Integer MAX_TWEETS_PER_PAGE = 100;
+    public static final Integer MAX_TWEETS_PER_PAGE = 200;
     public static final Integer FIRST_TWITTER_QUERY_PAGE_SIZE = 10;
     public static final SimpleDateFormat TWITTER_TIME_PATTERN = new SimpleDateFormat("EEE MMM dd HH:mm:ss +SSSS yyyy", Locale.ENGLISH);
     static {

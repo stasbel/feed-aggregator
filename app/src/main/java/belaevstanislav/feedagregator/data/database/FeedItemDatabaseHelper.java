@@ -13,12 +13,12 @@ import belaevstanislav.feedagregator.util.Constant;
 public class FeedItemDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Constant.DATABASE_NAME;
     private static final int DATABASE_VERSION = Constant.DATABASE_VERSION;
-    private static final String COMMON_INFORMATION_TABLE_NAME = Constant.COMMON_INFORMATION_TABLE_NAME;
-    private static final String FEED_ITEM_BYTECODE_TABLE_NAME = Constant.FEED_ITEM_BYTECODE_TABLE_NAME;
-    private static final String KEY_TABLE_ID = Constant.KEY_TABLE_ID;
-    private static final String KEY_TABLE_TIME = Constant.KEY_TABLE_TIME;
-    private static final String KEY_TABLE_SOURCE = Constant.KEY_TABLE_SOURCE;
-    private static final String KEY_TABLE_BYTECODE = Constant.KEY_TABLE_BYTECODE;
+    private static final String COMMON_INFORMATION_TABLE_NAME = Constant.DATABASE_COMMON_INFORMATION_TABLE_NAME;
+    private static final String FEED_ITEM_BYTECODE_TABLE_NAME = Constant.DATABASE_FEED_ITEM_BYTECODE_TABLE_NAME;
+    private static final String KEY_TABLE_ID = Constant.DATABASE_KEY_TABLE_ID;
+    private static final String KEY_TABLE_TIME = Constant.DATABASE_KEY_TABLE_TIME;
+    private static final String KEY_TABLE_SOURCE = Constant.DATABASE_KEY_TABLE_SOURCE;
+    private static final String KEY_TABLE_BYTECODE = Constant.DATABASE_KEY_TABLE_BYTECODE;
 
     public FeedItemDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -64,11 +64,16 @@ public class FeedItemDatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAll() {
         SQLiteDatabase database = getWritableDatabase();
-        /*String queryBoth = "SELECT a." + KEY_TABLE_ID + ", a." + KEY_TABLE_SOURCE + ", b." + KEY_TABLE_BYTECODE
-                + " FROM " + COMMON_INFORMATION_TABLE_NAME + " a INNER JOIN " + FEED_ITEM_BYTECODE_TABLE_NAME
-                + " b ON a." + KEY_TABLE_ID + " = b." + KEY_TABLE_ID + " ORDER BY "+ KEY_TABLE_TIME +" DESC";*/
         String query = "SELECT " + KEY_TABLE_ID + " FROM "
                 + COMMON_INFORMATION_TABLE_NAME + " ORDER BY " + KEY_TABLE_TIME + " DESC";
+        return database.rawQuery(query, null);
+    }
+
+    public Cursor getAllWithBytecode() {
+        SQLiteDatabase database = getWritableDatabase();
+        String query = "SELECT a." + KEY_TABLE_ID + ", a." + KEY_TABLE_SOURCE + ", b." + KEY_TABLE_BYTECODE
+                + " FROM " + COMMON_INFORMATION_TABLE_NAME + " a INNER JOIN " + FEED_ITEM_BYTECODE_TABLE_NAME
+                + " b ON a." + KEY_TABLE_ID + " = b." + KEY_TABLE_ID + " ORDER BY "+ KEY_TABLE_TIME +" DESC";
         return database.rawQuery(query, null);
     }
 

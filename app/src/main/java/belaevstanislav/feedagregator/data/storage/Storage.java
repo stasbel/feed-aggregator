@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import belaevstanislav.feedagregator.util.Constant;
+import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 
 public class Storage {
     private final SharedPreferences sharedPreferences;
@@ -29,7 +30,7 @@ public class Storage {
         return sharedPreferences.getString(key.toString(), "");
     }*/
 
-    /*public long getLong(StorageKey key) {
+    public long getLong(StorageKey key) {
         Long defaultValue;
         switch (key) {
             case LAST_TIME_OF_FEED_LIST_REFRESH:
@@ -43,11 +44,11 @@ public class Storage {
                 break;
         }
         return sharedPreferences.getLong(key.toString(), defaultValue);
-    }*/
-
-    public boolean getBoolean(StorageKey key) {
-        return sharedPreferences.getBoolean(key.toString(), Constant.STORAGE_DEFAULT_IS_SAVE_NEWS);
     }
+
+    /*public boolean getBoolean(StorageKey key) {
+        return sharedPreferences.getBoolean(key.toString(), Constant.STORAGE_DEFAULT_IS_SAVE_NEWS);
+    }*/
 
     /*public void delete(StorageKey key) {
         SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -27,7 +27,7 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         this.context = context;
         this.onFeedItemOpenListener = (OnFeedItemOpenListener) context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.indexColumnId = cursor.getColumnIndex(Constant.KEY_TABLE_ID);
+        this.indexColumnId = cursor.getColumnIndex(Constant.DATABASE_KEY_TABLE_ID);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         holder.resetSwipeState();
 
         // TODO отсюда можно запускать fetch некоторых item'ов далее
-        if (data.taskPool.isFinished(id)) {
-            data.taskPool.fetchParseTask(cursor.getLong(indexColumnId))
+        if (data.taskPool.isFinishBuildFeedItem(id)) {
+            data.taskPool.fetchFeedItem(cursor.getLong(indexColumnId))
                     .drawView(context, holder, true);
         } else {
             new GetFeedItemAndDrawViewAsyncTask(id, holder).execute();
@@ -68,7 +68,7 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
 
         @Override
         protected FeedItem doInBackground(Void... params) {
-            return data.taskPool.fetchParseTask(id);
+            return data.taskPool.fetchFeedItem(id);
         }
 
         @Override

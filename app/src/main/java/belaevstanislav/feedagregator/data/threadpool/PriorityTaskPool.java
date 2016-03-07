@@ -5,9 +5,9 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
-import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
+import belaevstanislav.feedagregator.data.threadpool.task.GetId;
 import belaevstanislav.feedagregator.data.threadpool.task.Task;
-import belaevstanislav.feedagregator.data.threadpool.task.parser.ParserTask;
+import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 
 public class PriorityTaskPool extends PriorityThreadPool {
     private final HashMap<Long, FutureTaskWrapper<FeedItem>> taskMap;
@@ -40,15 +40,15 @@ public class PriorityTaskPool extends PriorityThreadPool {
         return taskf;
     }
 
-    public <V extends ParserTask & Callable<FeedItem>> void submitParserTask(V task) {
+    public <V extends Task & GetId & Callable<FeedItem>> void submitFeedItemBuilderTask(V task) {
         taskMap.put(task.getId(), submitCallableTask(task));
     }
 
-    public boolean isFinished(long id) {
+    public boolean isFinishBuildFeedItem(long id) {
         return taskMap.get(id).isDone();
     }
 
-    public FeedItem fetchParseTask(long id) {
+    public FeedItem fetchFeedItem(long id) {
         try {
             return taskMap.get(id).get();
         } catch (Exception exception) {

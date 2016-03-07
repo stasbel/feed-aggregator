@@ -15,8 +15,8 @@ import belaevstanislav.feedagregator.feedsource.FeedSource;
 import belaevstanislav.feedagregator.service.util.Latch;
 
 public class TWITTER implements FeedSource {
-    public static void fetchFeedItems(Data data, Latch latch) {
-        data.taskPool.submitRunnableTask(new TWITTERGetterTask(data, latch));
+    public static void fetchFeedItems(Data data, Latch latch, boolean isNeedToCache) {
+        data.taskPool.submitRunnableTask(new TWITTERGetterTask(data, latch, isNeedToCache));
     }
 
     public static void login(Activity activity, TwitterAuthClient authClient, final LoginCallback callback) {

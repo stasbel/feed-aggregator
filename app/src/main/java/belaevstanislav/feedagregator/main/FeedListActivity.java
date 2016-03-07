@@ -1,5 +1,6 @@
 package belaevstanislav.feedagregator.main;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,6 @@ import com.mikepenz.materialdrawer.Drawer;
 
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.data.Data;
-import belaevstanislav.feedagregator.data.storage.StorageKey;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feedlist.FeedListCursorAdapter;
@@ -44,7 +44,7 @@ import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
 import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
 
 public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
-    private static FeedListCursorAdapter adapter;
+    private static FeedListCursorAdapter adapter = null;
     private Data data;
     private RecyclerView feedList;
     private Toolbar toolbar;
@@ -88,6 +88,9 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 
             // main
             initializeFeedList();
+
+            // deserealize
+            startDeserealizingDataService();
         }
     }
 
@@ -110,13 +113,11 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         stopService(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.feed_list_menu, menu);
+    private static void handleEmptyLongClick(final Activity activity, final int id) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                final View v = findViewById(R.id.action_refresh);
+                final View v = activity.findViewById(id);
 
                 if (v != null) {
                     v.setOnLongClickListener(new View.OnLongClickListener() {
@@ -126,25 +127,39 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                         }
                     });
                 }
+
+
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.feed_list_menu, menu);
+        handleEmptyLongClick(this, R.id.action_delete_all);
+        handleEmptyLongClick(this, R.id.action_refresh);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            // TODO исправить: быстро 2 раза = 2x items
-            onRefresh();
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                // TODO исправить: быстро 2 раза = 2x items
+                onRefresh();
+                break;
+            case R.id.action_delete_all:
+                data.database.deleteAll();
+                showFeedList();
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        fetchFeedItems();
+        startFetchingDataService();
     }
 
     private void initializeToolbar() {
@@ -170,17 +185,10 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         // TODO adadpter -> deserialize old items -> get rid of error
     }
 
-    private void fetchFeedItems() {
-        // TODO не удалять старые, a десерализовать
-        if (!data.storage.getBoolean(StorageKey.IS_SAVE_NEWS)) {
-            data.database.deleteAll();
-        }
-
-        startFetchingDataService();
-
-        // TODO delete?
-        //AsyncLatch asyncLatch = new AsyncLatch(Constant.SOURCES_COUNT, this);
-        //TWITTER.fetchFeedItems(asyncLatch);
+    private void startDeserealizingDataService() {
+        Intent intent = new Intent(this, DataService.class);
+        intent.putExtra(DataServiceCommand.COMMAND_KEY, (Parcelable) DataServiceCommand.DESEREALIZE_ITEMS);
+        startService(intent);
     }
 
     private void startFetchingDataService() {
@@ -199,23 +207,32 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     private void showFeedList() {
         // get & insert cursor
         Cursor cursor = data.database.getAll();
-        adapter = new FeedListCursorAdapter(cursor, data, this);
-        feedList.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new FeedListCursorAdapter(cursor, data, this);
+            feedList.setAdapter(adapter);
+        } else {
+            adapter.swapCursor(cursor);
+        }
 
-        // renember last time & remove loading bar
-        data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
+        // renember last time
+        // TODO когда надо?
+        // data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
+
+        // remove loading bar
         swipeRefreshLayout.setRefreshing(false);
 
         // scroll flags
         feedList.post(new Runnable() {
             @Override
             public void run() {
+                AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
                 if (isRecyclerScrollable()) {
-                    AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
                     params.setScrollFlags(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                             | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-                    toolbar.setLayoutParams(params);
+                } else {
+                    params.setScrollFlags(0);
                 }
+                toolbar.setLayoutParams(params);
             }
         });
     }
@@ -256,7 +273,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 Bundle bundle = getIntent().getExtras();
                 position = bundle.getInt(Constant.FEED_ITEM_POSITION_KEY);
                 id = bundle.getLong(Constant.FEED_ITEM_ID_KEY);
-                FeedItem feedItem = data.taskPool.fetchParseTask(id);
+                FeedItem feedItem = data.taskPool.fetchFeedItem(id);
                 View view = findViewById(android.R.id.content);
                 FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, data, null, view);
                 feedItem.drawView(this, viewHolder, true);
@@ -266,21 +283,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         @Override
         public boolean onCreateOptionsMenu(Menu menu) {
             getMenuInflater().inflate(R.menu.single_feed_item_menu, menu);
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    final View v = findViewById(R.id.action_delete);
-
-                    if (v != null) {
-                        v.setOnLongClickListener(new View.OnLongClickListener() {
-                            @Override
-                            public boolean onLongClick(View v) {
-                                return false;
-                            }
-                        });
-                    }
-                }
-            });
+            handleEmptyLongClick(this, R.id.action_delete);
             return true;
         }
 
@@ -298,10 +301,8 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 }
 
 // TODO IMPORTANT
-// TODO десеаризация старых
-// TODO ???
 // TODO сделать все из google документа
-// TODO переработать thread pool и task'и
+// TODO main activity + badge
 
 // TODO NEW
 // TODO feed source class

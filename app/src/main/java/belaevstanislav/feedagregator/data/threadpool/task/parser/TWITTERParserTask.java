@@ -16,10 +16,12 @@ import belaevstanislav.feedagregator.data.threadpool.task.cacher.TWITTERCacherTa
 
 public class TWITTERParserTask extends ParserTask implements Callable<FeedItem> {
     private final Tweet tweet;
+    private final boolean isNeedToCache;
 
-    public TWITTERParserTask(Data data, TWITTERFeedItemCore core, long id, Tweet tweet) {
+    public TWITTERParserTask(Data data, TWITTERFeedItemCore core, long id, Tweet tweet, boolean isNeedToCache) {
         super(data, core, id);
         this.tweet = tweet;
+        this.isNeedToCache = isNeedToCache;
     }
 
     @Override
@@ -27,7 +29,9 @@ public class TWITTERParserTask extends ParserTask implements Callable<FeedItem> 
         TWITTERFeedItem feedItem = null;
         try {
             feedItem = new TWITTERFeedItem(getFeedItemCore(), getId(), tweet);
-            getData().taskPool.submitRunnableTask(new TWITTERCacherTask(getData(), feedItem));
+            if (isNeedToCache) {
+                getData().taskPool.submitRunnableTask(new TWITTERCacherTask(getData(), feedItem));
+            }
         } catch (ParseException parseException) {
             Log.e("TWITTER", "TWITTER_PARSE_EXCEPTION");
             parseException.printStackTrace();

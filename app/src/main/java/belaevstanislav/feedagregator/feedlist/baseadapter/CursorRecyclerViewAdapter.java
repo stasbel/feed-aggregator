@@ -71,7 +71,7 @@ public abstract class CursorRecyclerViewAdapter<VH
         boolean cursorPresent = c != null;
         mCursor = c;
         mDataValid = cursorPresent;
-        mRowIDColumn = cursorPresent ? c.getColumnIndexOrThrow(Constant.KEY_TABLE_ID) : -1;
+        mRowIDColumn = cursorPresent ? c.getColumnIndexOrThrow(Constant.DATABASE_KEY_TABLE_ID) : -1;
 
         mChangeObserver = new ChangeObserver();
         mDataSetObserver = new MyDataSetObserver();
@@ -177,7 +177,7 @@ public abstract class CursorRecyclerViewAdapter<VH
         if (newCursor != null) {
             if (mChangeObserver != null) newCursor.registerContentObserver(mChangeObserver);
             if (mDataSetObserver != null) newCursor.registerDataSetObserver(mDataSetObserver);
-            mRowIDColumn = newCursor.getColumnIndexOrThrow("_id");
+            mRowIDColumn = newCursor.getColumnIndexOrThrow(Constant.DATABASE_KEY_TABLE_ID);
             mDataValid = true;
             // notify the observers about the new cursor
             notifyDataSetChanged();

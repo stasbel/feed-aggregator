@@ -21,10 +21,12 @@ import belaevstanislav.feedagregator.util.Constant;
 
 public class TWITTERGetterTask extends GetterTask implements Runnable {
     private final Latch latch;
+    private final boolean isNeedToCache;
 
-    public TWITTERGetterTask(Data data, Latch latch) {
+    public TWITTERGetterTask(Data data, Latch latch, boolean isNeedToCache) {
         super(data);
         this.latch = latch;
+        this.isNeedToCache = isNeedToCache;
     }
 
     private class HandleItemTask extends GetterTask implements Runnable {
@@ -44,7 +46,7 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
                 long id = getData().database.insertCore(core);
                 countDownLatch.countDown();
 
-                getData().taskPool.submitParserTask(new TWITTERParserTask(getData(), core, id, tweet));
+                getData().taskPool.submitFeedItemBuilderTask(new TWITTERParserTask(getData(), core, id, tweet, isNeedToCache));
             } catch (ParseException parseException) {
                 Log.e("TWITTER", "TWITTER_PARSECORE_EXCEPTION");
                 parseException.printStackTrace();
@@ -79,8 +81,8 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
                     Log.e("TWITTER", "TWITTER_THREADS_EXCEPTION");
                     exception.printStackTrace();
                 }
-                latch.countDownAndTryNotify();
             }
+            latch.countDownAndTryNotify();
         }
     }
 
@@ -88,21 +90,21 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
     public void run() {
         // TODO реализовать проход по страницам (результатов может быть больше, чем 200) + id
         Integer number;
-        //Long id;
+        Long id;
         if (!getData().storage.isInMemory(StorageKey.LAST_TWEET_ID)) {
             number = Constant.FIRST_TWITTER_QUERY_PAGE_SIZE;
-            //id = null;
+            id = null;
         } else {
             number = Constant.MAX_TWEETS_PER_PAGE;
-            // TODO delete 10000000
-            //id = StorageManager.getInstance().getLong(StorageKey.LAST_TWEET_ID) - 100000000;
+            // TODO remove 10000000
+            id = getData().storage.getLong(StorageKey.LAST_TWEET_ID) - 1000000000000000L;
         }
 
         TwitterCore
                 .getInstance()
                 .getApiClient()
                 .getStatusesService()
-                .homeTimeline(number, null, null, null, null, null, null, new TWITTERCallback());
+                .homeTimeline(number, id, null, null, null, null, null, new TWITTERCallback());
     }
 
     private class TWITTERCallback extends Callback<List<Tweet>> {
