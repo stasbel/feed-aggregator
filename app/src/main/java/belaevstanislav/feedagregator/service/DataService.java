@@ -39,7 +39,7 @@ public class DataService extends Service {
     }
 
     private void fetchNewItems() {
-        boolean isNeedToCache = data.storage.isInMemory(StorageKey.IS_SAVE_NEWS);
+        boolean isNeedToCache = data.storage.getBoolean(StorageKey.IS_SAVE_NEWS);
         Latch latch = new Latch(Constant.FEEDSOURCE_COUNT, notificator);
         TWITTER.fetchFeedItems(data, latch, isNeedToCache);
     }

@@ -9,10 +9,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Date;
 
+import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
-import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.service.util.ParcelableMethod;
+import belaevstanislav.feedagregator.util.Constant;
 
 public abstract class FeedItem extends FeedItemCore {
     private final long id;
@@ -40,9 +41,9 @@ public abstract class FeedItem extends FeedItemCore {
 
     public abstract int getLogo();
 
-    private void drawHead(Context context, FeedItemViewHolder holder,
-                          boolean isNeedToDrawLogoImage) throws Exception {
-        Picasso.with(context).load(getAuthorImageUrl()).fit().tag(context).into(holder.getAuthorImageView());
+    private void drawCommonHead(Context context, FeedItemViewHolder holder,
+                                boolean isNeedToDrawLogoImage) throws Exception {
+        Picasso.with(context).load(getAuthorImageUrl()).fit().tag(context).placeholder(R.drawable.athor_image_placeholder).into(holder.getAuthorImageView());
         holder.getAuthorNameView().setText(getAuthorName());
         holder.getDateView().setText(Constant.FEED_ITEM_HEAD_TIME_PATTERN.format(new Date(getDate() * 1000L)));
         if (isNeedToDrawLogoImage) {
@@ -50,22 +51,24 @@ public abstract class FeedItem extends FeedItemCore {
         }
     }
 
-    abstract void fillContent(LinearLayout content, Context context);
+    abstract void drawSpecialHead(Context context, FeedItemViewHolder holder);
+
+    abstract void fillContent(Context context, LinearLayout content);
 
     private void drawContent(Context context, FeedItemViewHolder holder) {
-        LinearLayout content = holder.getContentView();
+        final LinearLayout content = holder.getContentView();
         // TODO можно быть умней и проверять совпадение прошлых и новых view'ек чтобы не inflate'ить
         // TODO (очень врятли, слишком разные могут быть view'шки, а организация внутри предполагает массив)
         content.removeAllViews();
 
-        fillContent(content, context);
+        fillContent(context, content);
 
         // TODO ???
         /*content.post(new Runnable() {
             @Override
             public void run() {
-                if (content.getHeight() > ConstantsManager.getInstance().ROW_LAYOUT_MAX_HEIGHT_PX) {
-                    content.getLayoutParams().height = ConstantsManager.getInstance().ROW_LAYOUT_MAX_HEIGHT_PX;
+                if (content.getLayoutParams().height > Constant.ROW_LAYOUT_MAX_HEIGHT) {
+                    content.getLayoutParams().height = (int) Constant.ROW_LAYOUT_MAX_HEIGHT;
                     content.requestLayout();
                 }
             }
@@ -75,7 +78,8 @@ public abstract class FeedItem extends FeedItemCore {
     public void drawView(Context context, FeedItemViewHolder holder,
                          boolean isNeedToDrawLogoImage) {
         try {
-            drawHead(context, holder, isNeedToDrawLogoImage);
+            drawCommonHead(context, holder, isNeedToDrawLogoImage);
+            drawSpecialHead(context, holder);
             drawContent(context, holder);
         } catch (Exception exception) {
             Log.e("DRAW", "DRAW_EXCEPTION");

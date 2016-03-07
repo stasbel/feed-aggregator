@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 
@@ -24,9 +26,13 @@ public class Constant {
         return ContextCompat.getColor(context, resourceId);
     }
 
+    // TOAST
+    public static final String TOAST_TWITTER_ALREADY_LOGIN_IN = resources.getString(R.string.toast_twitter_already_login_in);
+
     // INTENTKEYS
     public static final String FEED_ITEM_POSITION_KEY = "position";
     public static final String FEED_ITEM_ID_KEY = "id";
+    public static final String FEED_ITEM_IS_FULL_WAY = "is_full_way";
 
     // DATASERVICE
     public static final String DATASERVICE_ACTION = resources.getString(R.string.dataservice_action);
@@ -86,22 +92,34 @@ public class Constant {
         SWIPE_RIGHT_BACKGROUND_PAINT.setColor(getResolvedColor(R.color.swipe_right_background));
     }
     private static final float SWIPE_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_text_size);
+    public static final float SWIPE_ICON_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_icon_size);
+    public static final float SWIPE_ICON_TEXT_BLANK_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_icon_text_blank_size);
     public static final String SWIPE_LEFT_TEXT = resources.getString(R.string.swipe_left_text);
+    public static final Drawable SWIPE_LEFT_ICON = resources.getDrawable(R.drawable.ic_forward_white_48dp, context.getTheme());
     public static final Rect SWIPE_LEFT_RECT = new Rect();
     public static final Paint SWIPE_LEFT_TEXT_PAINT = new Paint();
     static {
+        SWIPE_LEFT_TEXT_PAINT.setTypeface(Typeface.create(SWIPE_LEFT_TEXT_PAINT.getTypeface(), Typeface.BOLD));
         SWIPE_LEFT_TEXT_PAINT.setColor(getResolvedColor(R.color.swipe_text_color));
         SWIPE_LEFT_TEXT_PAINT.setTextSize(SWIPE_TEXT_SIZE);
         SWIPE_LEFT_TEXT_PAINT.setTextAlign(Paint.Align.LEFT);
         SWIPE_LEFT_TEXT_PAINT.getTextBounds(SWIPE_LEFT_TEXT, 0, SWIPE_LEFT_TEXT.length(), SWIPE_LEFT_RECT);
     }
     public static final String SWIPE_RIGHT_TEXT = resources.getString(R.string.swipe_right_text);
+    public static final Drawable SWIPE_RIGHT_ICON = resources.getDrawable(R.drawable.ic_delete_sweep_white_48dp, context.getTheme());
     public static final Paint SWIPE_RIGHT_TEXT_PAINT = new Paint();
     public static final Rect SWIPE_RIGHT_RECT = new Rect();
     static {
+        SWIPE_RIGHT_TEXT_PAINT.setTypeface(Typeface.create(SWIPE_RIGHT_TEXT_PAINT.getTypeface(), Typeface.BOLD));
         SWIPE_RIGHT_TEXT_PAINT.setColor(getResolvedColor(R.color.swipe_text_color));
         SWIPE_RIGHT_TEXT_PAINT.setTextSize(SWIPE_TEXT_SIZE);
         SWIPE_RIGHT_TEXT_PAINT.setTextAlign(Paint.Align.LEFT);
         SWIPE_RIGHT_TEXT_PAINT.getTextBounds(SWIPE_RIGHT_TEXT, 0, SWIPE_RIGHT_TEXT.length(), SWIPE_RIGHT_RECT);
     }
+
+    // VIEW
+    public static final int VIEW_TWITTER_LOGO = R.drawable.twitter_logo;
+    public static final int VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR = getResolvedColor(R.color.view_twitter_text_block_link_color);
+    public static int VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_author_info_twitter_text_size);
+    public static final int VIEW_TEXT_BLOCK_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_text_block_text_size);
 }

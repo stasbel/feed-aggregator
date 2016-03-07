@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.util.helpfullmethod;
+package belaevstanislav.feedagregator.util.helpmethod;
 
 import android.content.Intent;
 

@@ -17,14 +17,19 @@ public class FeedListOnScrollListener extends RecyclerView.OnScrollListener {
     }
 
     @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        super.onScrollStateChanged(recyclerView, newState);
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        super.onScrolled(recyclerView, dx, dy);
 
         // TODO возвращаться в исходное положение плавнее?
         FeedItemViewHolder lastSwiped = swipeCallback.getLastSwiped();
-        if (newState == RecyclerView.SCROLL_STATE_DRAGGING && lastSwiped != null) {
+        if (lastSwiped != null) {
             lastSwiped.resetSwipeState();
         }
+    }
+
+    @Override
+    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
 
         // TODO нужно ли?
         if (newState == RecyclerView.SCROLL_STATE_IDLE || newState == RecyclerView.SCROLL_STATE_DRAGGING) {

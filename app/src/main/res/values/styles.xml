@@ -2,6 +2,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
         <item name="android:colorPrimaryDark">@android:color/holo_blue_light</item>
+        <item name="android:colorBackground">@color/md_white_1000</item>
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">

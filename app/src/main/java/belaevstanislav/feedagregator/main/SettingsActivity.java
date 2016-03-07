@@ -5,7 +5,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 
 import belaevstanislav.feedagregator.R;
-import belaevstanislav.feedagregator.util.MyToolbar;
+import belaevstanislav.feedagregator.util.view.MyToolbar;
 
 public class SettingsActivity extends AppCompatActivity {
     @Override

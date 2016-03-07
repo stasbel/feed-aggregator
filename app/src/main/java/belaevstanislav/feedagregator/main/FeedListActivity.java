@@ -37,11 +37,11 @@ import belaevstanislav.feedagregator.service.DataServiceCommand;
 import belaevstanislav.feedagregator.service.Notificator;
 import belaevstanislav.feedagregator.service.NotificatorMessage;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.MyDrawer;
-import belaevstanislav.feedagregator.util.MyToolbar;
+import belaevstanislav.feedagregator.util.view.MyDrawer;
+import belaevstanislav.feedagregator.util.view.MyToolbar;
 import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
-import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
-import belaevstanislav.feedagregator.util.helpfullmethod.IntentModifier;
+import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
+import belaevstanislav.feedagregator.util.helpmethod.IntentModifier;
 
 public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
     private static FeedListCursorAdapter adapter = null;
@@ -216,7 +216,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 
         // renember last time
         // TODO когда надо?
-        // data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpfullMethod.getNowTime());
+        // data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpMethod.getNowTime());
 
         // remove loading bar
         swipeRefreshLayout.setRefreshing(false);
@@ -238,12 +238,13 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     }
 
     @Override
-    public void onOpen(final int position, final long id) {
-        HelpfullMethod.createActivity(this, SingleFeedItemActivity.class, new IntentModifier() {
+    public void onOpen(final int position, final long id, final boolean isFullWay) {
+        HelpMethod.createActivity(this, SingleFeedItemActivity.class, new IntentModifier() {
             @Override
             public void modify(Intent intent) {
                 intent.putExtra(Constant.FEED_ITEM_POSITION_KEY, position);
                 intent.putExtra(Constant.FEED_ITEM_ID_KEY, id);
+                intent.putExtra(Constant.FEED_ITEM_IS_FULL_WAY, isFullWay);
             }
         });
     }
@@ -252,6 +253,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         private Data data;
         private int position;
         private long id;
+        private boolean isFullWay;
 
         public SingleFeedItemActivity() {
         }
@@ -273,10 +275,20 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 Bundle bundle = getIntent().getExtras();
                 position = bundle.getInt(Constant.FEED_ITEM_POSITION_KEY);
                 id = bundle.getLong(Constant.FEED_ITEM_ID_KEY);
+                isFullWay = bundle.getBoolean(Constant.FEED_ITEM_IS_FULL_WAY);
                 FeedItem feedItem = data.taskPool.fetchFeedItem(id);
                 View view = findViewById(android.R.id.content);
                 FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, data, null, view);
                 feedItem.drawView(this, viewHolder, true);
+            }
+        }
+
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+
+            if (!isFullWay) {
+                adapter.notifyItemChanged(position);
             }
         }
 
@@ -322,3 +334,4 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 // TODO infinite loop при нулевом запросе и при запросе только в вк
 // TODO свой view
 // TODO content provider?
+// TODO все размеры из layout ов перенести в dimens?

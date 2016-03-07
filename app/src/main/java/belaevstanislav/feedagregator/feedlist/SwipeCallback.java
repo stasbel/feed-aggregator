@@ -21,7 +21,7 @@ public class SwipeCallback extends ItemTouchHelper.Callback {
         if (direction == ItemTouchHelper.LEFT) {
             feedItemViewHolder.delete();
         } else {
-            feedItemViewHolder.open();
+            feedItemViewHolder.open(true);
         }
     }
 

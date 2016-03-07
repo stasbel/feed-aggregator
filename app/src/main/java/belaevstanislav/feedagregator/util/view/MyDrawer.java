@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.util;
+package belaevstanislav.feedagregator.util.view;
 
 import android.app.Activity;
 import android.support.v7.widget.Toolbar;
@@ -6,7 +6,6 @@ import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -16,7 +15,7 @@ import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.main.FeedListActivity;
 import belaevstanislav.feedagregator.main.LoginActivity;
 import belaevstanislav.feedagregator.main.SettingsActivity;
-import belaevstanislav.feedagregator.util.helpfullmethod.HelpfullMethod;
+import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
 
 public class MyDrawer {
     private static final long FEED_LIST_ITEM_IDITIFIER = 322;
@@ -26,7 +25,7 @@ public class MyDrawer {
             @Override
             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                 if (activity.getClass() != cls) {
-                    HelpfullMethod.createActivity(activity, cls);
+                    HelpMethod.createActivity(activity, cls);
                 }
                 return false;
             }

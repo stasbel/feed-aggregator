@@ -3,5 +3,11 @@
     <dimen name="swipe_lock_size">100dp</dimen>
     <dimen name="swipe_lock_margin">25dp</dimen>
     <dimen name="swipe_text_size">10sp</dimen>
+    <dimen name="swipe_icon_size">20dp</dimen>
+    <dimen name="swipe_icon_text_blank_size">3dp</dimen>
     <dimen name="toolbar_elevation">4dp</dimen>
+    <dimen name="view_author_name_text_size">10sp</dimen>
+    <dimen name="view_author_info_twitter_text_size">5sp</dimen>
+    <dimen name="view_date_text_size">10sp</dimen>
+    <dimen name="view_text_block_text_size">5.5sp</dimen>
 </resources>

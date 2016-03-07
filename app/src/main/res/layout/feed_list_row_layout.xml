@@ -2,61 +2,75 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:background="@drawable/feed_list_row_layout_background">
 
     <ImageView
         android:id="@+id/feed_item_backgroud"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:contentDescription="@null"
-        android:clickable="true" />
+        android:clickable="true"
+        android:contentDescription="@null"/>
 
     <RelativeLayout
         android:id="@+id/feed_item_foreground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="3dp">
 
         <ImageView
             android:id="@+id/feed_item_author_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@null"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:contentDescription="@null"
-            android:layout_marginLeft="3dp"
-            android:layout_marginTop="3dp" />
+            android:src="@drawable/athor_image_placeholder"/>
 
         <TextView
             android:id="@+id/feed_item_author_name"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_toRightOf="@+id/feed_item_author_image"
-            android:layout_toLeftOf="@+id/feed_item_logo"
-            android:layout_alignTop="@+id/feed_item_author_image" />
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_alignTop="@+id/feed_item_author_image"
+            android:layout_toEndOf="@+id/feed_item_author_image"
+            android:paddingStart="2dp"
+            android:paddingEnd="0dp"
+            android:textColor="@color/view_author_name_text_color"
+            android:textSize="@dimen/view_author_name_text_size"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/feed_item_author_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/feed_item_author_name"
+            android:layout_toEndOf="@+id/feed_item_author_image"
+            android:paddingStart="2dp"
+            android:paddingEnd="0dp"/>
 
         <TextView
             android:id="@+id/feed_item_date"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_below="@+id/feed_item_author_name"
-            android:layout_toRightOf="@+id/feed_item_author_image"
-            android:layout_toLeftOf="@+id/feed_item_logo" />
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"
+            android:layout_alignTop="@+id/feed_item_author_image"
+            android:layout_toStartOf="@+id/feed_item_logo"
+            android:paddingStart="0dp"
+            android:paddingEnd="2dp"
+            android:textSize="@dimen/view_date_text_size"/>
 
         <ImageView
             android:id="@+id/feed_item_logo"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@null"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignTop="@id/feed_item_author_image"
+            android:layout_alignParentEnd="true"
             android:contentDescription="@null"
-            android:layout_alignBottom="@+id/feed_item_date"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="3dp" />
+            android:src="@null"/>
 
         <LinearLayout
             android:id="@+id/feed_item_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_below="@+id/feed_item_author_image" >
+            android:layout_below="@+id/feed_item_author_image"
+            android:orientation="vertical">
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

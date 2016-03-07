@@ -7,4 +7,5 @@
     <string name="drawer_item_settings">Settings</string>
     <string name="drawer_item_exit">Exit</string>
     <string name="settings_save_news">Save news</string>
+    <string name="toast_twitter_already_login_in">"Already login in TWITTER!"</string>
 </resources>

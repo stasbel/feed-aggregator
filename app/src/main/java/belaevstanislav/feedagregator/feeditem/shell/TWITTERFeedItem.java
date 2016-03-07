@@ -3,10 +3,13 @@ package belaevstanislav.feedagregator.feeditem.shell;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextPaint;
+import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.models.Tweet;
@@ -15,18 +18,22 @@ import com.twitter.sdk.android.core.models.UrlEntity;
 
 import java.text.ParseException;
 
-import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
+import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
+import belaevstanislav.feedagregator.util.Constant;
+import belaevstanislav.feedagregator.util.view.TextBlock;
 
 public class TWITTERFeedItem extends FeedItem {
+    private final String authorInfo;
     private final String text;
     private final String imageUrl;
 
     public TWITTERFeedItem(FeedItemCore core, long id, Tweet tweet) throws ParseException {
         super(core, id, tweet.user.name, tweet.user.profileImageUrl);
 
-        TweetEntities entities = tweet.entities;
+        this.authorInfo = "@" + tweet.user.screenName;
 
+        TweetEntities entities = tweet.entities;
         String preText = tweet.text;
         if (entities.urls != null) {
             for (int index = 0; index < entities.urls.size(); index++) {
@@ -48,16 +55,62 @@ public class TWITTERFeedItem extends FeedItem {
 
     @Override
     public int getLogo() {
-        return R.drawable.twitter_logo;
+        return Constant.VIEW_TWITTER_LOGO;
     }
 
     @Override
-    void fillContent(LinearLayout content, Context context) {
+    void drawSpecialHead(Context context, FeedItemViewHolder holder) {
+        holder.getAuthorInfo().setTextSize(Constant.VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE);
+        holder.getAuthorInfo().setText(authorInfo);
+    }
+
+    private class URLSpanNoUnderline extends URLSpan {
+        public URLSpanNoUnderline(URLSpan src) {
+            super(src.getURL());
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            super.updateDrawState(ds);
+            ds.setUnderlineText(false);
+        }
+    }
+
+    private class Factory extends Spannable.Factory {
+        @Override
+        public Spannable newSpannable(CharSequence source) {
+            return new SpannableNoUnderline(source);
+        }
+    }
+
+    private class SpannableNoUnderline extends SpannableString {
+        public SpannableNoUnderline(CharSequence source) {
+            super(source);
+        }
+
+        @Override
+        public void setSpan(Object what, int start, int end, int flags) {
+            if (what instanceof URLSpan) {
+                what = new URLSpanNoUnderline((URLSpan) what);
+            }
+            super.setSpan(what, start, end, flags);
+        }
+    }
+
+    @Override
+    void fillContent(Context context, LinearLayout content) {
         if (!text.equals("")) {
-            TextView textView = new TextView(context);
+            TextBlock textBlock = new TextBlock(context);
+            textBlock.setText(text);
+            Linkify.addLinks(textBlock, Linkify.ALL);
+            textBlock.setSpannableFactory(new Factory());
+            textBlock.setLinkTextColor(Constant.VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR);
+            content.addView(textBlock);
+
+            /*TextView textView = new TextView(context);
             textView.setText(text);
             Linkify.addLinks(textView, Linkify.ALL);
-            content.addView(textView);
+            content.addView(textView);*/
         }
 
         if (imageUrl != null) {
@@ -75,6 +128,7 @@ public class TWITTERFeedItem extends FeedItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeString(authorInfo);
         dest.writeString(text);
         dest.writeString(imageUrl);
     }
@@ -94,6 +148,7 @@ public class TWITTERFeedItem extends FeedItem {
 
     private TWITTERFeedItem(Parcel in) {
         super(in);
+        authorInfo = in.readString();
         text = in.readString();
         imageUrl = in.readString();
     }

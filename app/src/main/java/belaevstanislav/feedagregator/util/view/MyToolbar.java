@@ -1,4 +1,4 @@
-package belaevstanislav.feedagregator.util;
+package belaevstanislav.feedagregator.util.view;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
@@ -14,7 +13,9 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
-import belaevstanislav.feedagregator.util.MyToolbar;
+import belaevstanislav.feedagregator.util.Constant;
+import belaevstanislav.feedagregator.util.view.MyToolbar;
+import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
 
 public class LoginActivity extends AppCompatActivity {
     private TwitterAuthClient twitterAuthClient;
@@ -54,8 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 @Override public void onAllreadyLoginIn() {
-                    Toast toast = Toast.makeText(LoginActivity.this, "Already login in TWITTER!", Toast.LENGTH_SHORT);
-                    toast.show();
+                    HelpMethod.toastShort(LoginActivity.this, Constant.TOAST_TWITTER_ALREADY_LOGIN_IN);
                 }
             });
         }
