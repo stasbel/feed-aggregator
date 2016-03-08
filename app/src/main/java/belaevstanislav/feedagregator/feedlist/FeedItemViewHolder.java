@@ -159,7 +159,8 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         // TODO иконки? выполнять поменьше действий? new font for text?
 
         final float relativeX = foregroundView.getTranslationX();
-        final float absoluteTop = itemView.getTop(), absoluteBot = itemView.getBottom();
+        final float absoluteTop = itemView.getTop();
+        float absoluteBot = itemView.getBottom();
         final float relativeTop = foregroundView.getTop(), relativeBot = foregroundView.getBottom();
         final float left, right;
         final Paint backgroundPaint, textPaint;

@@ -36,20 +36,28 @@ public class TWITTERFeedItem extends FeedItem {
         TweetEntities entities = tweet.entities;
         String preText = tweet.text;
         if (entities.urls != null) {
-            for (int index = 0; index < entities.urls.size(); index++) {
+            int size = entities.urls.size();
+            for (int index = 0; index < size; index++) {
                 UrlEntity entity = entities.urls.get(index);
                 preText = preText.replaceAll(entity.url, entity.displayUrl);
             }
         }
+        /*List<HashtagEntity> hashtags = entities.hashtags;
+        if (hashtags != null) {
+            int size = hashtags.size();
+            for (int index = 0; index < size; index++) {
+                HashtagEntity entity = hashtags.get(index);
+            }
+        }*/
         this.text = preText;
 
         String preImageUrl = null;
         if (entities.media != null) {
             preImageUrl = entities.media.get(0).mediaUrl;
         }
-        if (tweet.extendedEtities != null && tweet.extendedEtities.media.get(0).type.equals("photo")) {
+        /*if (tweet.extendedEtities != null && tweet.extendedEtities.media.get(0).type.equals("photo")) {
             preImageUrl = tweet.extendedEtities.media.get(0).mediaUrl;
-        }
+        }*/
         this.imageUrl = preImageUrl;
     }
 
@@ -106,11 +114,6 @@ public class TWITTERFeedItem extends FeedItem {
             textBlock.setSpannableFactory(new Factory());
             textBlock.setLinkTextColor(Constant.VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR);
             content.addView(textBlock);
-
-            /*TextView textView = new TextView(context);
-            textView.setText(text);
-            Linkify.addLinks(textView, Linkify.ALL);
-            content.addView(textView);*/
         }
 
         if (imageUrl != null) {

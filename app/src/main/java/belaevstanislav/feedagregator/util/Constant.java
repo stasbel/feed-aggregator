@@ -122,4 +122,8 @@ public class Constant {
     public static final int VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR = getResolvedColor(R.color.view_twitter_text_block_link_color);
     public static int VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_author_info_twitter_text_size);
     public static final int VIEW_TEXT_BLOCK_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_text_block_text_size);
+
+    // DRAWER
+    public static final int DRAWER_TEXT_COLOR = getResolvedColor(R.color.drawer_text_color);
+    public static final int DRAWER_BACKGROUND_COLOR = getResolvedColor(R.color.drawer_background_color);
 }

@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.BadgeStyle;
 import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -15,10 +16,11 @@ import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.main.FeedListActivity;
 import belaevstanislav.feedagregator.main.LoginActivity;
 import belaevstanislav.feedagregator.main.SettingsActivity;
+import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
 
 public class MyDrawer {
-    private static final long FEED_LIST_ITEM_IDITIFIER = 322;
+    private static final long FEED_LIST_ITEM_IDITIFIER = 0;
 
     private static Drawer.OnDrawerItemClickListener createOnClickItemListener(final Activity activity, final Class<?> cls) {
         return new Drawer.OnDrawerItemClickListener() {
@@ -35,6 +37,7 @@ public class MyDrawer {
     private static PrimaryDrawerItem createFeedListItem(final Activity activity) {
         return new PrimaryDrawerItem().withName(R.string.drawer_item_feedlist).withIcon(R.drawable.ic_list_black_48dp)
                 .withIdentifier(FEED_LIST_ITEM_IDITIFIER)
+                .withBadgeStyle(new BadgeStyle().withTextColor(Constant.DRAWER_TEXT_COLOR).withColor(Constant.DRAWER_BACKGROUND_COLOR))
                 .withOnDrawerItemClickListener(createOnClickItemListener(activity, FeedListActivity.class));
     }
 
@@ -75,6 +78,12 @@ public class MyDrawer {
     }
 
     public static void setBadge(Drawer drawer, int count) {
-        drawer.updateBadge(FEED_LIST_ITEM_IDITIFIER, new StringHolder("+" + String.valueOf(count)));
+        StringHolder holder;
+        if (count > 0) {
+            holder = new StringHolder("+" + String.valueOf(count));
+        } else {
+            holder = null;
+        }
+        drawer.updateBadge(FEED_LIST_ITEM_IDITIFIER, holder);
     }
 }

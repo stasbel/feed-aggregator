@@ -7,12 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mikepenz.materialdrawer.Drawer;
+
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feedlist.baseadapter.CursorRecyclerViewAdapter;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
+import belaevstanislav.feedagregator.util.view.MyDrawer;
 
 public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemViewHolder> {
     private final Data data;
@@ -20,14 +23,22 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
     private final OnFeedItemOpenListener onFeedItemOpenListener;
     private final LayoutInflater layoutInflater;
     private final int indexColumnId;
+    private final Drawer drawer;
 
-    public FeedListCursorAdapter(Cursor cursor, Data data, Context context) {
+    public FeedListCursorAdapter(Cursor cursor, Data data, Context context, Drawer drawer) {
         super(cursor);
         this.data = data;
         this.context = context;
         this.onFeedItemOpenListener = (OnFeedItemOpenListener) context;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.indexColumnId = cursor.getColumnIndex(Constant.DATABASE_KEY_TABLE_ID);
+        this.drawer = drawer;
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        MyDrawer.setBadge(drawer, newCursor.getCount());
+        return super.swapCursor(newCursor);
     }
 
     @Override
@@ -38,6 +49,10 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
 
     @Override
     public void onBindViewHolderCursor(FeedItemViewHolder holder, Cursor cursor) {
+        if (cursor.getPosition() == cursor.getCount() - 1) {
+            holder.itemView.setBackground(null);
+        }
+
         long id = cursor.getLong(indexColumnId);
 
         holder.setId(id);

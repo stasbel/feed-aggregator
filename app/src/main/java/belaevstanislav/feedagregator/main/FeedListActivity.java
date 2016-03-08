@@ -37,11 +37,11 @@ import belaevstanislav.feedagregator.service.DataServiceCommand;
 import belaevstanislav.feedagregator.service.Notificator;
 import belaevstanislav.feedagregator.service.NotificatorMessage;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.view.MyDrawer;
-import belaevstanislav.feedagregator.util.view.MyToolbar;
 import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
 import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
 import belaevstanislav.feedagregator.util.helpmethod.IntentModifier;
+import belaevstanislav.feedagregator.util.view.MyDrawer;
+import belaevstanislav.feedagregator.util.view.MyToolbar;
 
 public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
     private static FeedListCursorAdapter adapter = null;
@@ -127,8 +127,6 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                         }
                     });
                 }
-
-
             }
         });
     }
@@ -145,8 +143,9 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                // TODO исправить: быстро 2 раза = 2x items
-                onRefresh();
+                if (!swipeRefreshLayout.isRefreshing()) {
+                    onRefresh();
+                }
                 break;
             case R.id.action_delete_all:
                 data.database.deleteAll();
@@ -208,11 +207,10 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         // get & insert cursor
         Cursor cursor = data.database.getAll();
         if (adapter == null) {
-            adapter = new FeedListCursorAdapter(cursor, data, this);
+            adapter = new FeedListCursorAdapter(cursor, data, this, drawer);
             feedList.setAdapter(adapter);
-        } else {
-            adapter.swapCursor(cursor);
         }
+        adapter.swapCursor(cursor);
 
         // renember last time
         // TODO когда надо?
@@ -254,9 +252,6 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         private int position;
         private long id;
         private boolean isFullWay;
-
-        public SingleFeedItemActivity() {
-        }
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -314,7 +309,13 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
 
 // TODO IMPORTANT
 // TODO сделать все из google документа
-// TODO main activity + badge
+
+// TODO ISSUES
+// TODO иногда пропадают фоны свайпов
+// TODO иногда пропадают разделители
+
+// TODO STYLE
+// TODO выделялки у twitter'a
 
 // TODO NEW
 // TODO feed source class
