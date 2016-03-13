@@ -9,7 +9,7 @@
     <dimen name="toolbar_size">45dp</dimen>
     <dimen name="view_author_name_text_size">10sp</dimen>
     <dimen name="view_author_info_twitter_text_size">5sp</dimen>
-    <dimen name="view_date_text_size">10sp</dimen>
-    <dimen name="view_text_block_text_size">5.5sp</dimen>
+    <dimen name="view_date_text_size">8sp</dimen>
+    <dimen name="view_text_block_text_size">5sp</dimen>
     <dimen name="view_repost_icon_size">13dp</dimen>
 </resources>

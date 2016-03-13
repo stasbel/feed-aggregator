@@ -1,13 +1,13 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
-        <item name="android:colorPrimaryDark">@android:color/holo_blue_light</item>
+        <item name="android:colorPrimaryDark">#80CBC4</item>
         <item name="android:colorBackground">@color/md_white_1000</item>
         <item name="android:actionBarSize">@dimen/toolbar_size</item>
     </style>
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:background">@android:color/holo_blue_dark</item>
+        <item name="android:background">#4DB6AC</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="android:textColorSecondary">#FFFFFF</item>
         <item name="android:actionBarSize">@dimen/toolbar_size</item>

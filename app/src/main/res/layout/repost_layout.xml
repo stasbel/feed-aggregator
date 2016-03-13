@@ -15,9 +15,11 @@
         android:id="@+id/feed_item_foreground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:paddingTop="3dp">
+        android:paddingStart="6dp"
+        android:paddingEnd="0dp"
+        android:paddingTop="3dp"
+        android:layout_marginStart="3dp"
+        android:background="@drawable/repost_stroke">
 
         <ImageView
             android:id="@+id/feed_item_author_image"
@@ -53,19 +55,10 @@
             android:layout_width="wrap_content"
             android:layout_height="15dp"
             android:layout_alignTop="@+id/feed_item_author_image"
-            android:layout_toStartOf="@+id/feed_item_logo"
+            android:layout_alignParentEnd="true"
             android:paddingStart="0dp"
             android:paddingEnd="2dp"
             android:textSize="@dimen/view_date_text_size"/>
-
-        <ImageView
-            android:id="@+id/feed_item_logo"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignTop="@id/feed_item_author_image"
-            android:layout_alignParentEnd="true"
-            android:contentDescription="@null"
-            android:src="@null"/>
 
         <LinearLayout
             android:id="@+id/feed_item_content"

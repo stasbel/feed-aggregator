@@ -162,6 +162,7 @@ public class Constant {
     public static int VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_author_info_twitter_text_size);
     public static final int VIEW_TEXT_BLOCK_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_text_block_text_size);
     public static final int VIEW_REPOST_ICON_SIZE = resources.getDimensionPixelSize(R.dimen.view_repost_icon_size);
+    public static final int VIEW_REPOST_COLOR = getResolvedColor(R.color.repost_color);
 
     // DRAWER
     public static final int DRAWER_TEXT_COLOR = getResolvedColor(R.color.drawer_text_color);

@@ -89,7 +89,7 @@ public class MenuDrawer extends Drawer {
     }
 
     private SecondaryDrawerItem createTWITTERItem() {
-        return new SecondaryDrawerItem().withName("TWITTER")
+        return new SecondaryDrawerItem().withName("TWITTER").withIcon(R.drawable.twitter_logo)
                 .withIdentifier(TWITTER_ITEM_IDINTIFIER)
                 .withBadgeStyle(new BadgeStyle().withTextColor(Constant.DRAWER_TEXT_COLOR).withColor(Constant.DRAWER_TWITTER_COLOR)
                         .withCorners(5).withPadding(1))
@@ -103,7 +103,7 @@ public class MenuDrawer extends Drawer {
     }
 
     private SecondaryDrawerItem createVKItem() {
-        return new SecondaryDrawerItem().withName("VK")
+        return new SecondaryDrawerItem().withName("VK").withIcon(R.drawable.vk_logo)
                 .withIdentifier(VK_ITEM_IDINTIFIER)
                 .withBadgeStyle(new BadgeStyle().withTextColor(Constant.DRAWER_TEXT_COLOR).withColor(Constant.DRAWER_VK_COLOR)
                         .withCorners(5).withPadding(1))

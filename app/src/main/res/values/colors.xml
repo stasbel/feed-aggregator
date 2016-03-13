@@ -9,6 +9,7 @@
     <color name="view_vk_text_block_link_color">#0084B7</color>
     <color name="drawer_text_color">#FFFFFF</color>
     <color name="drawer_background_color">#969595</color>
-    <color name="drawer_twitter_color">#00ABFC</color>
-    <color name="drawer_vk_color">#0088B2</color>
+    <color name="drawer_twitter_color">#00ACF1</color>
+    <color name="drawer_vk_color">#00729F</color>
+    <color name="repost_color">#71aee4</color>
 </resources>
