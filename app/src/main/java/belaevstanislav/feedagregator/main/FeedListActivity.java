@@ -292,8 +292,8 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemAct
             cursor = data.database.getAll();
             drawer.selectFeedList();
         }
-        showFeedList(cursor, true);
         adapter.notifyItemRemoved(position);
+        showFeedList(cursor, true);
     }
 
     public static class SingleFeedItemActivity extends AppCompatActivity {

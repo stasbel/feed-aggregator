@@ -118,6 +118,7 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
         public void failure(TwitterException twitterException) {
             Log.e("TWITTER", "TWITTER_GET_EXCEPTION");
             twitterException.printStackTrace();
+            latch.countDownAndTryNotify();
         }
     }
 }

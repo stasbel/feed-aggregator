@@ -12,15 +12,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 import belaevstanislav.feedagregator.data.Data;
-import belaevstanislav.feedagregator.data.threadpool.task.parser.TWITTERParserTask;
 import belaevstanislav.feedagregator.data.threadpool.task.parser.VKParserTask;
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
-import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
 import belaevstanislav.feedagregator.feeditem.core.VKFeedItemCore;
 import belaevstanislav.feedagregator.feedsource.vk.VKDataStore;
 import belaevstanislav.feedagregator.service.util.Latch;
@@ -117,18 +114,18 @@ public class VKGetterTask extends GetterTask implements Runnable {
                         exception.printStackTrace();
                     }
                 }
-
-                latch.countDownAndTryNotify();
             } catch (JSONException exception) {
                 Log.e("VK", "VK_PARSE_EXCEPTION");
                 exception.printStackTrace();
             }
+            latch.countDownAndTryNotify();
         }
 
         @Override
         public void onError(VKError error) {
             super.onError(error);
             Log.e("VK", "VK_GET_EXCEPTION");
+            latch.countDownAndTryNotify();
         }
     }
 }
