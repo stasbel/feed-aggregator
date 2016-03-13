@@ -33,9 +33,9 @@ public class FeedListCursorAdapter extends CursorRecyclerViewAdapter<FeedItemVie
         this.drawer = drawer;
     }
 
-    public Cursor swapCursor(Cursor newCursor, boolean isNeedToUpdateBadge) {
-        if (isNeedToUpdateBadge) {
-            drawer.updateBadges(newCursor);
+    public Cursor swapCursor(Cursor newCursor, boolean isNeedToUpdateBadges) {
+        if (isNeedToUpdateBadges) {
+            drawer.updateBadges();
         }
         return super.swapCursor(newCursor);
     }

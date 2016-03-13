@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -17,6 +16,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feedlist.SwipeCallback;
 import belaevstanislav.feedagregator.feedsource.FeedSourceName;
@@ -34,13 +34,15 @@ public class MenuDrawer extends Drawer {
 
     private final Activity activity;
     private final FeedListQuerries querries;
+    private final Data data;
 
     public MenuDrawer(DrawerBuilder drawerBuilder, Activity activity, Toolbar toolbar,
-                      SwipeCallback swipeCallback) {
+                      SwipeCallback swipeCallback, Data data) {
         super(drawerBuilder);
 
         this.activity = activity;
         this.querries = (FeedListQuerries) activity;
+        this.data = data;
 
         drawerBuilder.withActivity(activity)
                 .withToolbar(toolbar)
@@ -116,16 +118,19 @@ public class MenuDrawer extends Drawer {
 
     private PrimaryDrawerItem createLoginItem() {
         return new PrimaryDrawerItem().withName(R.string.drawer_item_login).withIcon(R.drawable.ic_account_circle_black_48dp)
+                .withSelectable(false)
                 .withOnDrawerItemClickListener(createOnClickItemListener(LoginActivity.class));
     }
 
     private PrimaryDrawerItem createSettingsItem() {
         return new PrimaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(R.drawable.ic_settings_black_48dp)
+                .withSelectable(false)
                 .withOnDrawerItemClickListener(createOnClickItemListener(SettingsActivity.class));
     }
 
     private PrimaryDrawerItem createExitItem() {
         return new PrimaryDrawerItem().withName(R.string.drawer_item_exit).withIcon(R.drawable.ic_exit_to_app_black_48dp)
+                .withSelectable(false)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -144,7 +149,13 @@ public class MenuDrawer extends Drawer {
         }
     }
 
-    public void updateBadges(Cursor cursor) {
+    public void selectFeedList() {
+        setSelection(FEED_LIST_ITEM_IDINTIFIER);
+    }
+
+    public void updateBadges() {
+        Cursor cursor = data.database.getAll();
+
         int ALLCount = cursor.getCount();
         int TWITTERCount = 0;
         int VKCount = 0;
@@ -170,7 +181,6 @@ public class MenuDrawer extends Drawer {
     }
 
     public Selection getSelection() {
-        Log.e("??", String.valueOf(getCurrentSelectedPosition()));
         switch (getCurrentSelectedPosition()) {
             case 1:
                 return Selection.ALL;

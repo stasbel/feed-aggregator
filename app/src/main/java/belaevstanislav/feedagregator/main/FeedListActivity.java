@@ -88,7 +88,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemAct
 
             // drawer
             swipeCallback = new SwipeCallback();
-            drawer = new MenuDrawer(new DrawerBuilder(), this, toolbar, swipeCallback);
+            drawer = new MenuDrawer(new DrawerBuilder(), this, toolbar, swipeCallback, data);
 
             // swiperefresh
             (swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh))
@@ -103,14 +103,6 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemAct
 
             // deserealize
             startDeserealizingDataService();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (drawer != null) {
-            drawer.setSelectionAtPosition(1);
         }
     }
 
@@ -296,9 +288,12 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemAct
                 break;
 
         }
-        adapter.swapCursor(cursor, true);
-        adapter.notifyItemRemoved(position);
+        if (cursor.getCount() == 0) {
+            cursor = data.database.getAll();
+            drawer.selectFeedList();
+        }
         showFeedList(cursor, true);
+        adapter.notifyItemRemoved(position);
     }
 
     public static class SingleFeedItemActivity extends AppCompatActivity {
@@ -376,7 +371,6 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemAct
 
 // TODO ISSUES
 // TODO иногда пропадают фоны свайпов
-// TODO иногда пропадают разделители
 
 // TODO STYLE
 // TODO выделялки у twitter'a
