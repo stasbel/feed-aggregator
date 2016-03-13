@@ -19,6 +19,7 @@
         android:paddingEnd="0dp"
         android:paddingTop="3dp"
         android:layout_marginStart="3dp"
+        android:layout_marginTop="2dp"
         android:background="@drawable/repost_stroke">
 
         <ImageView
