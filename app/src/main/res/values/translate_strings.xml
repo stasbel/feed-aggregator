@@ -8,4 +8,6 @@
     <string name="drawer_item_exit">Exit</string>
     <string name="settings_save_news">Save news</string>
     <string name="toast_twitter_already_login_in">"Already login in TWITTER!"</string>
+    <string name="toast_vk_already_login_in">"Already login in VK!"</string>
+    <string name="feed_list_placeholder_text">No news for now! Try to refresh.</string>
 </resources>

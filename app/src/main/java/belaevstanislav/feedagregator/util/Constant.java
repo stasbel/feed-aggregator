@@ -28,6 +28,7 @@ public class Constant {
 
     // TOAST
     public static final String TOAST_TWITTER_ALREADY_LOGIN_IN = resources.getString(R.string.toast_twitter_already_login_in);
+    public static final String TOAST_VK_ALREADY_LOGIN_IN = resources.getString(R.string.toast_vk_already_login_in);
 
     // INTENTKEYS
     public static final String FEED_ITEM_POSITION_KEY = "position";
@@ -40,7 +41,7 @@ public class Constant {
     public static final String DATASERVICE_MESSAGE_KEY = "NotificatorMessage";
 
     // SCREEN
-    public static final float SCREEN_HEIGHT_PX = displayMetrics.heightPixels;
+    // public static final float SCREEN_HEIGHT_PX = displayMetrics.heightPixels;
     public static final float SCREEN_WIDTH_PX = displayMetrics.widthPixels;
 
     // STORAGE
@@ -49,7 +50,7 @@ public class Constant {
     public static final boolean STORAGE_DEFAULT_IS_SAVE_NEWS = true;
 
     // FEEDSOURCE
-    public static final int FEEDSOURCE_COUNT = 1;
+    public static final int FEEDSOURCE_COUNT = 2;
 
     // DATABASE
     public static final String DATABASE_NAME = "UnReadFeedItem.db";
@@ -64,12 +65,38 @@ public class Constant {
     // TWITTER
     public static final String TWITTER_API_KEY = resources.getString(R.string.twitter_api_key);
     public static final String TWITTER_API_SECRET = resources.getString(R.string.twitter_api_sercet);
-    public static final Integer MAX_TWEETS_PER_PAGE = 200;
-    public static final Integer FIRST_TWITTER_QUERY_PAGE_SIZE = 10;
+    public static final Integer TWITTER_MAX_TWEETS_PER_PAGE = 20;
+    public static final Integer TWITTER_FIRST_QUERY_PAGE_SIZE = 10;
     public static final SimpleDateFormat TWITTER_TIME_PATTERN = new SimpleDateFormat("EEE MMM dd HH:mm:ss +SSSS yyyy", Locale.ENGLISH);
     static {
         TWITTER_TIME_PATTERN.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
+
+    // VK
+    public static final String VK_SCOPE = "wall, offline, friends";
+    public static final String VK_KEY_DATE = "date";
+    public static final String VK_KEY_SOURCE_ID = "source_id";
+    public static final String VK_KEY_FROM_ID = "from_id";
+    public static final String VK_KEY_NAME = "name";
+    public static final String VK_KEY_FIRST_NAME = "first_name";
+    public static final String VK_KEY_LAST_NAME = "last_name";
+    public static final String VK_KEY_PHOTO_100 = "photo_100";
+    public static final String VK_KEY_PHOTO_200 = "photo_200";
+    public static final String VK_KEY_RESPONSE = "response";
+    public static final String VK_KEY_ID = "id";
+    public static final String VK_KEY_PROFILES = "profiles";
+    public static final String VK_KEY_GROUPS = "groups";
+    public static final String VK_KEY_ITEMS = "items";
+    public static final String VK_KEY_PHOTO_604 = "photo_604";
+    public static final String VK_KEY_TEXT = "text";
+    public static final String VK_KEY_ATTACHMENTS = "attachments";
+    public static final String VK_KEY_TYPE = "type";
+    public static final String VK_KEY_COPY_HISTORY = "copy_history";
+    public static final String VK_TYPE_PHOTO = "photo";
+    public static final String VK_API_NEWSFEED_GET = "newsfeed.get";
+    public static final String VK_CONST_FILTERS = "post";
+    public static final String VK_CONST_COUNT = "100";
+    public static final String VK_API_CONST_START_TIME = "start_time";
 
     // FEEDITEM
     public static final SimpleDateFormat FEED_ITEM_HEAD_TIME_PATTERN = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
@@ -78,8 +105,8 @@ public class Constant {
     }
 
     // FEEDLIST
-    public static final float ROW_LAYOUT_MAX_HEIGHT = resources.getDimensionPixelSize(R.dimen.row_layout_max_height);
-    public static final float SWIPE_FULL_TRASHHOLD = 1f;
+    // public static final float ROW_LAYOUT_MAX_HEIGHT = resources.getDimensionPixelSize(R.dimen.row_layout_max_height);
+    public static final float SWIPE_FULL_TRASHHOLD = 0.85f;
     public static final float SWIPE_LOCK_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_lock_size);
     public static final float SWIPE_LOCK_TRASHHOLD = 1 - (SWIPE_LOCK_SIZE / SCREEN_WIDTH_PX);
     public static final float SWIPE_LOCK_MARGIN = resources.getDimensionPixelSize(R.dimen.swipe_lock_margin);
@@ -117,13 +144,28 @@ public class Constant {
         SWIPE_RIGHT_TEXT_PAINT.getTextBounds(SWIPE_RIGHT_TEXT, 0, SWIPE_RIGHT_TEXT.length(), SWIPE_RIGHT_RECT);
     }
 
+    // LAYOUT
+    public static final int LAYOUT_REPOST = R.layout.repost_layout;
+    public static final int LAYOUT_SETTINGS = R.layout.settings_layout;
+    public static final int LAYOUT_SINGLE_FEED_ITEM = R.layout.single_feed_item_layout;
+    public static final int LAYOUT_FEED_LIST = R.layout.feed_list_layout;
+    public static final int LAYOUT_FEED_LIST_ROW = R.layout.feed_list_row_layout;
+    public static final int LAYOUT_LOGIN = R.layout.login_layout;
+    public static final int LAYOUT_DRAWER_HEADER = R.layout.drawer_header;
+
     // VIEW
+    public static final int VIEW_REPOST_ICON = R.drawable.ic_repeat_black_48dp;
     public static final int VIEW_TWITTER_LOGO = R.drawable.twitter_logo;
     public static final int VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR = getResolvedColor(R.color.view_twitter_text_block_link_color);
+    public static final int VIEW_VK_LOGO = R.drawable.vk_logo;
+    public static final int VIEW_VK_TEXT_BLOCK_LINK_COLOR = getResolvedColor(R.color.view_vk_text_block_link_color);
     public static int VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_author_info_twitter_text_size);
     public static final int VIEW_TEXT_BLOCK_TEXT_SIZE = resources.getDimensionPixelSize(R.dimen.view_text_block_text_size);
+    public static final int VIEW_REPOST_ICON_SIZE = resources.getDimensionPixelSize(R.dimen.view_repost_icon_size);
 
     // DRAWER
     public static final int DRAWER_TEXT_COLOR = getResolvedColor(R.color.drawer_text_color);
     public static final int DRAWER_BACKGROUND_COLOR = getResolvedColor(R.color.drawer_background_color);
+    public static final int DRAWER_TWITTER_COLOR = getResolvedColor(R.color.drawer_twitter_color);
+    public static final int DRAWER_VK_COLOR = getResolvedColor(R.color.drawer_vk_color);
 }

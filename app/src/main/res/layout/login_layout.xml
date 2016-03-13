@@ -19,4 +19,14 @@
         android:contentDescription="@null"
         android:scaleType="fitCenter"
         android:src="@drawable/twitter_logo" />
+
+    <ImageButton
+        android:id="@+id/vk_login_button"
+        android:layout_below="@+id/twitter_login_button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="5dp"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/vk_logo" />
 </RelativeLayout>

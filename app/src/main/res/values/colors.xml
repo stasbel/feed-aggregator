@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="swipe_left_background">#42A5F5</color>
+    <color name="swipe_left_background">#00ABFC</color>
     <color name="swipe_right_background">#FF0000</color>
     <color name="swipe_text_color">#FFFFFF</color>
     <color name="feed_item_divider_color">#EEEEEE</color>
     <color name="view_author_name_text_color">#212121</color>
     <color name="view_twitter_text_block_link_color">#0084B7</color>
+    <color name="view_vk_text_block_link_color">#0084B7</color>
     <color name="drawer_text_color">#FFFFFF</color>
-    <color name="drawer_background_color">#FF0000</color>
+    <color name="drawer_background_color">#969595</color>
+    <color name="drawer_twitter_color">#00ABFC</color>
+    <color name="drawer_vk_color">#0088B2</color>
 </resources>

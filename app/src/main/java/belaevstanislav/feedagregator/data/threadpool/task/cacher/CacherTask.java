@@ -5,15 +5,20 @@ import belaevstanislav.feedagregator.data.threadpool.task.Task;
 import belaevstanislav.feedagregator.data.threadpool.task.TaskPriority;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 
-public abstract class CacherTask extends Task {
+public class CacherTask extends Task implements Runnable {
     private final FeedItem feedItem;
 
-    protected CacherTask(Data data, FeedItem feedItem) {
+    public CacherTask(Data data, FeedItem feedItem) {
         super(TaskPriority.CACHER_PRIORITY, data);
         this.feedItem = feedItem;
     }
 
     public FeedItem getFeedItem() {
         return feedItem;
+    }
+
+    @Override
+    public void run() {
+        data.database.insertFeedItem(feedItem);
     }
 }

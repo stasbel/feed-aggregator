@@ -7,25 +7,25 @@ import android.support.annotation.NonNull;
 import belaevstanislav.feedagregator.feedsource.FeedSourceName;
 
 public abstract class FeedItemCore implements Comparable<FeedItemCore>, Parcelable {
-    private final long date;
     private final FeedSourceName type;
+    private final long date;
 
-    protected FeedItemCore(long date, FeedSourceName type) {
-        this.date = date;
+    protected FeedItemCore(FeedSourceName type, long date) {
         this.type = type;
+        this.date = date;
     }
 
     protected FeedItemCore(FeedItemCore core) {
-        date = core.getDate();
         type = core.getType();
-    }
-
-    public long getDate() {
-        return date;
+        date = core.getDate();
     }
 
     public FeedSourceName getType() {
         return type;
+    }
+
+    public long getDate() {
+        return date;
     }
 
     @Override
@@ -35,12 +35,12 @@ public abstract class FeedItemCore implements Comparable<FeedItemCore>, Parcelab
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(date);
         dest.writeParcelable(type, flags);
+        dest.writeLong(date);
     }
 
     protected FeedItemCore(Parcel in) {
-        date = in.readLong();
         type = in.readParcelable(FeedSourceName.class.getClassLoader());
+        date = in.readLong();
     }
 }

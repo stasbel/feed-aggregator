@@ -12,8 +12,8 @@ import belaevstanislav.feedagregator.util.Constant;
 
 public class TWITTERFeedItemCore extends FeedItemCore {
     public TWITTERFeedItemCore(Tweet tweet) throws ParseException {
-        super(Constant.TWITTER_TIME_PATTERN.parse(tweet.createdAt).getTime() / 1000,
-                FeedSourceName.TWITTER);
+        super(FeedSourceName.TWITTER,
+                Constant.TWITTER_TIME_PATTERN.parse(tweet.createdAt).getTime() / 1000);
     }
 
     @Override

@@ -9,6 +9,7 @@ import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.data.storage.StorageKey;
 import belaevstanislav.feedagregator.data.threadpool.task.deserializer.DeserializerTask;
 import belaevstanislav.feedagregator.feedsource.twitter.TWITTER;
+import belaevstanislav.feedagregator.feedsource.vk.VK;
 import belaevstanislav.feedagregator.main.FeedAgregator;
 import belaevstanislav.feedagregator.service.util.Latch;
 import belaevstanislav.feedagregator.util.Constant;
@@ -42,6 +43,7 @@ public class DataService extends Service {
         boolean isNeedToCache = data.storage.getBoolean(StorageKey.IS_SAVE_NEWS);
         Latch latch = new Latch(Constant.FEEDSOURCE_COUNT, notificator);
         TWITTER.fetchFeedItems(data, latch, isNeedToCache);
+        VK.fetchFeedItems(data, latch, isNeedToCache);
     }
 
     private void deserializeItems() {

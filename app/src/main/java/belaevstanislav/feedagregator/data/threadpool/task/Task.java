@@ -4,7 +4,7 @@ import belaevstanislav.feedagregator.data.Data;
 
 public abstract class Task {
     private final TaskPriority taskPriority;
-    private final Data data;
+    protected final Data data;
 
     protected Task(TaskPriority taskPriority, Data data) {
         this.taskPriority = taskPriority;
@@ -13,9 +13,5 @@ public abstract class Task {
 
     public TaskPriority getTaskPriority() {
         return taskPriority;
-    }
-
-    protected Data getData() {
-        return data;
     }
 }

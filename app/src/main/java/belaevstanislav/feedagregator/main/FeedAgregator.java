@@ -7,6 +7,7 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.vk.sdk.VKSdk;
 
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.util.Constant;
@@ -16,12 +17,12 @@ public class FeedAgregator extends Application {
     private static Context context;
     private Data data;
 
-    public Data getData() {
-        return data;
-    }
-
     public static Context getContext() {
         return context;
+    }
+
+    public Data getData() {
+        return data;
     }
 
     @Override
@@ -42,5 +43,8 @@ public class FeedAgregator extends Application {
                 .debuggable(true)
                 .build();
         Fabric.with(fabric);
+
+        // vk
+        VKSdk.initialize(this);
     }
 }

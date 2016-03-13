@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FeedAgregator</string>
     <string name="dataservice_action">belaevstanislav.feedagregator.DataService</string>
+    <integer name="com_vk_sdk_AppId">5169254</integer>
     <!-- TODO #NOTIMPORTANT написать нормальный url для поиска -->
     <string name="url_host">null</string>
     <string name="url_path">/null</string>

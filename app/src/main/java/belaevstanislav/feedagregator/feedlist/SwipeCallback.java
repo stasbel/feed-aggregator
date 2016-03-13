@@ -37,7 +37,13 @@ public class SwipeCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+        //super.clearView(recyclerView, viewHolder);
+    }
+
+    @Override
+    public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
         // TODO рисовать промежуточное состояние в onchilddrawover для увеличения fps?
 
         FeedItemViewHolder feedItemViewHolder = (FeedItemViewHolder) viewHolder;

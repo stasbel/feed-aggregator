@@ -44,4 +44,5 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:recyclerview-v7:23.2.+'
     compile('com.mikepenz:materialdrawer:5.0.3@aar') { transitive = true }
+    compile project(':vksdk_library')
 }

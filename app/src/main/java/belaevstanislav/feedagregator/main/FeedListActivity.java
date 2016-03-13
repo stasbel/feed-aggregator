@@ -22,41 +22,49 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RelativeLayout;
 
-import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
+import belaevstanislav.feedagregator.feedlist.FeedItemSeparator;
 import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.feedlist.FeedListCursorAdapter;
 import belaevstanislav.feedagregator.feedlist.FeedListOnScrollListener;
 import belaevstanislav.feedagregator.feedlist.SwipeCallback;
+import belaevstanislav.feedagregator.feedlist.baseadapter.SwipeRefreshLayoutToggleScrollListener;
+import belaevstanislav.feedagregator.feedsource.FeedSourceName;
 import belaevstanislav.feedagregator.service.DataService;
 import belaevstanislav.feedagregator.service.DataServiceCommand;
 import belaevstanislav.feedagregator.service.Notificator;
 import belaevstanislav.feedagregator.service.NotificatorMessage;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
+import belaevstanislav.feedagregator.util.globalinterface.FeedListQuerries;
+import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemActionListener;
 import belaevstanislav.feedagregator.util.helpmethod.HelpMethod;
 import belaevstanislav.feedagregator.util.helpmethod.IntentModifier;
-import belaevstanislav.feedagregator.util.view.MyDrawer;
+import belaevstanislav.feedagregator.util.view.MenuDrawer;
 import belaevstanislav.feedagregator.util.view.MyToolbar;
 
-public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpenListener, SwipeRefreshLayout.OnRefreshListener {
+public class FeedListActivity extends AppCompatActivity implements OnFeedItemActionListener,
+        SwipeRefreshLayout.OnRefreshListener, FeedListQuerries {
     private static FeedListCursorAdapter adapter = null;
     private Data data;
     private RecyclerView feedList;
     private Toolbar toolbar;
-    private Drawer drawer;
+    private MenuDrawer drawer;
+    private SwipeCallback swipeCallback;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private RelativeLayout placeholder;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             NotificatorMessage message = intent.getParcelableExtra(NotificatorMessage.MESSAGE_KEY);
             switch (message) {
                 case READY_TO_SHOW:
-                    showFeedList();
+                    showAll();
                     break;
             }
         }
@@ -67,7 +75,10 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            setContentView(R.layout.feed_list_layout);
+            setContentView(Constant.LAYOUT_FEED_LIST);
+
+            // placeholder
+            placeholder = (RelativeLayout) findViewById(R.id.feed_list_placeholder);
 
             // data
             data = ((FeedAgregator) getApplication()).getData();
@@ -76,7 +87,8 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
             initializeToolbar();
 
             // drawer
-            drawer = MyDrawer.createDrawer(this, toolbar);
+            swipeCallback = new SwipeCallback();
+            drawer = new MenuDrawer(new DrawerBuilder(), this, toolbar, swipeCallback);
 
             // swiperefresh
             (swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh))
@@ -97,7 +109,9 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     @Override
     protected void onStart() {
         super.onStart();
-        drawer.setSelectionAtPosition(1);
+        if (drawer != null) {
+            drawer.setSelectionAtPosition(1);
+        }
     }
 
     @Override
@@ -149,7 +163,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 break;
             case R.id.action_delete_all:
                 data.database.deleteAll();
-                showFeedList();
+                showAll();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -164,6 +178,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     private void initializeToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
@@ -174,12 +189,13 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     private void initializeFeedList() {
         feedList = (RecyclerView) findViewById(R.id.feed_list);
         feedList.setHasFixedSize(true);
+        feedList.addItemDecoration(new FeedItemSeparator(this));
         feedList.setLayoutManager(new LinearLayoutManager(this));
         feedList.setItemAnimator(new DefaultItemAnimator());
-        SwipeCallback callback = new SwipeCallback();
-        ItemTouchHelper helper = new ItemTouchHelper(callback);
+        ItemTouchHelper helper = new ItemTouchHelper(swipeCallback);
         helper.attachToRecyclerView(feedList);
-        feedList.addOnScrollListener(new FeedListOnScrollListener(this, callback));
+        feedList.addOnScrollListener(new FeedListOnScrollListener(this, swipeCallback));
+        feedList.addOnScrollListener(new SwipeRefreshLayoutToggleScrollListener(swipeRefreshLayout));
 
         // TODO adadpter -> deserialize old items -> get rid of error
     }
@@ -203,21 +219,24 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 && layoutManager.findLastCompletelyVisibleItemPosition() < adapter.getItemCount() - 1;
     }
 
-    private void showFeedList() {
+    private void showFeedList(Cursor cursor, boolean isNeedToUpdateBadge) {
         // get & insert cursor
-        Cursor cursor = data.database.getAll();
         if (adapter == null) {
             adapter = new FeedListCursorAdapter(cursor, data, this, drawer);
             feedList.setAdapter(adapter);
         }
-        adapter.swapCursor(cursor);
+        adapter.swapCursor(cursor, isNeedToUpdateBadge);
+
+        // placeholder
+        if (cursor.getCount() == 0) {
+            placeholder.setVisibility(View.VISIBLE);
+        } else {
+            placeholder.setVisibility(View.INVISIBLE);
+        }
 
         // renember last time
         // TODO когда надо?
         // data.storage.saveLong(StorageKey.LAST_TIME_OF_FEED_LIST_REFRESH, HelpMethod.getNowTime());
-
-        // remove loading bar
-        swipeRefreshLayout.setRefreshing(false);
 
         // scroll flags
         feedList.post(new Runnable() {
@@ -236,6 +255,20 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
     }
 
     @Override
+    public void showAll() {
+        swipeRefreshLayout.setRefreshing(true);
+        showFeedList(data.database.getAll(), true);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void showOnlySource(FeedSourceName name) {
+        swipeRefreshLayout.setRefreshing(true);
+        showFeedList(data.database.getOnlySource(name), false);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
     public void onOpen(final int position, final long id, final boolean isFullWay) {
         HelpMethod.createActivity(this, SingleFeedItemActivity.class, new IntentModifier() {
             @Override
@@ -245,6 +278,27 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 intent.putExtra(Constant.FEED_ITEM_IS_FULL_WAY, isFullWay);
             }
         });
+    }
+
+    @Override
+    public void onDelete(int position, long id) {
+        data.database.delete(id);
+        Cursor cursor = null;
+        switch (drawer.getSelection()) {
+            case ALL:
+                cursor = data.database.getAll();
+                break;
+            case TWITTER:
+                cursor = data.database.getOnlySource(FeedSourceName.TWITTER);
+                break;
+            case VK:
+                cursor = data.database.getOnlySource(FeedSourceName.VK);
+                break;
+
+        }
+        adapter.swapCursor(cursor, true);
+        adapter.notifyItemRemoved(position);
+        showFeedList(cursor, true);
     }
 
     public static class SingleFeedItemActivity extends AppCompatActivity {
@@ -258,7 +312,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
             super.onCreate(savedInstanceState);
 
             if (savedInstanceState == null) {
-                setContentView(R.layout.single_feed_item_layout);
+                setContentView(Constant.LAYOUT_SINGLE_FEED_ITEM);
 
                 // data
                 data = ((FeedAgregator) getApplication()).getData();
@@ -267,14 +321,7 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
                 MyToolbar.setToolbar(this);
 
                 // feeditem
-                Bundle bundle = getIntent().getExtras();
-                position = bundle.getInt(Constant.FEED_ITEM_POSITION_KEY);
-                id = bundle.getLong(Constant.FEED_ITEM_ID_KEY);
-                isFullWay = bundle.getBoolean(Constant.FEED_ITEM_IS_FULL_WAY);
-                FeedItem feedItem = data.taskPool.fetchFeedItem(id);
-                View view = findViewById(android.R.id.content);
-                FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, data, null, view);
-                feedItem.drawView(this, viewHolder, true);
+                drawFeedItem();
             }
         }
 
@@ -297,15 +344,32 @@ public class FeedListActivity extends AppCompatActivity implements OnFeedItemOpe
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             if (item.getItemId() == R.id.action_delete) {
-                data.database.delete(id);
-                adapter.deleteFeedItem(position);
+                adapter.deleteFeedItem(position, id);
                 onBackPressed();
             }
 
             return super.onOptionsItemSelected(item);
         }
+
+        private void drawFeedItem() {
+            Bundle bundle = getIntent().getExtras();
+            position = bundle.getInt(Constant.FEED_ITEM_POSITION_KEY);
+            id = bundle.getLong(Constant.FEED_ITEM_ID_KEY);
+            isFullWay = bundle.getBoolean(Constant.FEED_ITEM_IS_FULL_WAY);
+            FeedItem feedItem = data.taskPool.fetchFeedItem(id);
+            View view = findViewById(android.R.id.content);
+            FeedItemViewHolder viewHolder = new FeedItemViewHolder(null, data, null, view);
+            feedItem.drawView(this, viewHolder, true);
+        }
     }
 }
+
+// TODO TODAY
+// TODO VK (repost style)
+// TODO YOUTUBE
+// TODO drawer
+// TODO account manager
+// TODO placeholder for no news
 
 // TODO IMPORTANT
 // TODO сделать все из google документа

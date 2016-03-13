@@ -14,9 +14,10 @@ import java.util.concurrent.CountDownLatch;
 
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.data.storage.StorageKey;
-import belaevstanislav.feedagregator.service.util.Latch;
-import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
 import belaevstanislav.feedagregator.data.threadpool.task.parser.TWITTERParserTask;
+import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
+import belaevstanislav.feedagregator.feeditem.core.TWITTERFeedItemCore;
+import belaevstanislav.feedagregator.service.util.Latch;
 import belaevstanislav.feedagregator.util.Constant;
 
 public class TWITTERGetterTask extends GetterTask implements Runnable {
@@ -42,11 +43,12 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
         @Override
         public void run() {
             try {
-                TWITTERFeedItemCore core = new TWITTERFeedItemCore(tweet);
-                long id = getData().database.insertCore(core);
+                FeedItemCore core = new TWITTERFeedItemCore(tweet);
+                long id = data.database.insertCore(core);
+
                 countDownLatch.countDown();
 
-                getData().taskPool.submitFeedItemBuilderTask(new TWITTERParserTask(getData(), core, id, tweet, isNeedToCache));
+                data.taskPool.submitFeedItemBuilderTask(new TWITTERParserTask(data, core, id, tweet, isNeedToCache));
             } catch (ParseException parseException) {
                 Log.e("TWITTER", "TWITTER_PARSECORE_EXCEPTION");
                 parseException.printStackTrace();
@@ -67,10 +69,9 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
             List<Tweet> tweetList = result.data;
             int size = tweetList.size();
             if (size > 0) {
-                getData().storage.saveLong(StorageKey.LAST_TWEET_ID, tweetList.get(0).getId());
+                data.storage.saveLong(StorageKey.LAST_TWEET_ID, tweetList.get(0).getId());
 
                 CountDownLatch countDownLatch = new CountDownLatch(size);
-                Data data = getData();
                 for (int index = 0; index < size; index++) {
                     data.taskPool.submitRunnableTask(new HandleItemTask(data, tweetList.get(index), countDownLatch));
                 }
@@ -91,13 +92,13 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
         // TODO реализовать проход по страницам (результатов может быть больше, чем 200) + id
         Integer number;
         Long id;
-        if (!getData().storage.isInMemory(StorageKey.LAST_TWEET_ID)) {
-            number = Constant.FIRST_TWITTER_QUERY_PAGE_SIZE;
+        if (!data.storage.isInMemory(StorageKey.LAST_TWEET_ID)) {
+            number = Constant.TWITTER_FIRST_QUERY_PAGE_SIZE;
             id = null;
         } else {
-            number = Constant.MAX_TWEETS_PER_PAGE;
+            number = Constant.TWITTER_MAX_TWEETS_PER_PAGE;
             // TODO remove 10000000
-            id = getData().storage.getLong(StorageKey.LAST_TWEET_ID) - 1000000000000000L;
+            id = data.storage.getLong(StorageKey.LAST_TWEET_ID) - 1000000000000000L;
         }
 
         TwitterCore
@@ -110,7 +111,7 @@ public class TWITTERGetterTask extends GetterTask implements Runnable {
     private class TWITTERCallback extends Callback<List<Tweet>> {
         @Override
         public void success(Result<List<Tweet>> result) {
-            getData().taskPool.submitRunnableTask(new HandleItemsTask(getData(), result));
+            data.taskPool.submitRunnableTask(new HandleItemsTask(data, result));
         }
 
         @Override

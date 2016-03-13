@@ -13,27 +13,27 @@ import android.widget.TextView;
 import belaevstanislav.feedagregator.R;
 import belaevstanislav.feedagregator.data.Data;
 import belaevstanislav.feedagregator.util.Constant;
-import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemOpenListener;
+import belaevstanislav.feedagregator.util.globalinterface.OnFeedItemActionListener;
 
 public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     private final Data data;
     private final FeedListCursorAdapter feedListCursorAdapter;
-    private final OnFeedItemOpenListener onFeedItemOpenListener;
+    private final OnFeedItemActionListener onFeedItemActionListener;
     private final ImageView backgroundView;
     private final View foregroundView;
     private final ImageView authorImage;
     private final TextView authorName;
-    private final TextView authorInfo;
+    private final LinearLayout authorInfo;
     private final TextView date;
     private final ImageView logo;
     private final LinearLayout content;
 
     public FeedItemViewHolder(FeedListCursorAdapter feedListCursorAdapter, Data data,
-                              OnFeedItemOpenListener onFeedItemOpenListener, View itemView) {
+                              OnFeedItemActionListener onFeedItemActionListener, View itemView) {
         super(itemView);
         this.data = data;
         this.feedListCursorAdapter = feedListCursorAdapter;
-        this.onFeedItemOpenListener = onFeedItemOpenListener;
+        this.onFeedItemActionListener = onFeedItemActionListener;
         this.backgroundView = (ImageView) itemView.findViewById(R.id.feed_item_backgroud);
         backgroundView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,7 +48,7 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         this.foregroundView = itemView.findViewById(R.id.feed_item_foreground);
         this.authorImage = (ImageView) itemView.findViewById(R.id.feed_item_author_image);
         this.authorName = (TextView) itemView.findViewById(R.id.feed_item_author_name);
-        this.authorInfo = (TextView) itemView.findViewById(R.id.feed_item_author_info);
+        this.authorInfo = (LinearLayout) itemView.findViewById(R.id.feed_item_author_info);
         this.date = (TextView) itemView.findViewById(R.id.feed_item_date);
         this.logo = (ImageView) itemView.findViewById(R.id.feed_item_logo);
         this.content = (LinearLayout) itemView.findViewById(R.id.feed_item_content);
@@ -62,7 +62,7 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
         return authorName;
     }
 
-    public TextView getAuthorInfo() {
+    public LinearLayout getAuthorInfo() {
         return authorInfo;
     }
 
@@ -93,14 +93,12 @@ public class FeedItemViewHolder extends RecyclerView.ViewHolder {
     public void delete() {
         // TODO getLayoutPosition (заменить везде, где можно))? выполнять удаление лениво для ускорения?
         // TODO добавить анимацию удаления
-        int position = getAdapterPosition();
-        data.database.delete(getId());
-        feedListCursorAdapter.deleteFeedItem(position);
+        onFeedItemActionListener.onDelete(getAdapterPosition(), getId());
     }
 
     public void open(boolean isFullWay) {
         int position = getAdapterPosition();
-        onFeedItemOpenListener.onOpen(position, getId(), isFullWay);
+        onFeedItemActionListener.onOpen(position, getId(), isFullWay);
         if (isFullWay) {
             feedListCursorAdapter.notifyItemChanged(position);
         }

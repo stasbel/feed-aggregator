@@ -5,6 +5,7 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 
 import belaevstanislav.feedagregator.R;
+import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.view.MyToolbar;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -13,7 +14,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            setContentView(R.layout.settings_layout);
+            setContentView(Constant.LAYOUT_SETTINGS);
 
             // toolbar
             MyToolbar.setToolbar(this);

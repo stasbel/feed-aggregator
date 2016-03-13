@@ -3,6 +3,7 @@ package belaevstanislav.feedagregator.feeditem.shell;
 import android.content.Context;
 import android.os.Parcel;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.squareup.picasso.Picasso;
@@ -49,9 +50,10 @@ public abstract class FeedItem extends FeedItemCore {
         if (isNeedToDrawLogoImage) {
             holder.getLogoView().setImageResource(getLogo());
         }
+        holder.getAuthorInfo().removeAllViews();
     }
 
-    abstract void drawSpecialHead(Context context, FeedItemViewHolder holder);
+    abstract void drawSpecialHead(Context context, LinearLayout info);
 
     abstract void fillContent(Context context, LinearLayout content);
 
@@ -79,7 +81,7 @@ public abstract class FeedItem extends FeedItemCore {
                          boolean isNeedToDrawLogoImage) {
         try {
             drawCommonHead(context, holder, isNeedToDrawLogoImage);
-            drawSpecialHead(context, holder);
+            drawSpecialHead(context, holder.getAuthorInfo());
             drawContent(context, holder);
         } catch (Exception exception) {
             Log.e("DRAW", "DRAW_EXCEPTION");

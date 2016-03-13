@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
+import belaevstanislav.feedagregator.feedsource.FeedSourceName;
 import belaevstanislav.feedagregator.util.Constant;
 
 public class FeedItemDatabaseHelper extends SQLiteOpenHelper {
@@ -64,8 +65,16 @@ public class FeedItemDatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getAll() {
         SQLiteDatabase database = getWritableDatabase();
-        String query = "SELECT " + KEY_TABLE_ID + " FROM "
-                + COMMON_INFORMATION_TABLE_NAME + " ORDER BY " + KEY_TABLE_TIME + " DESC";
+        String query = "SELECT * FROM " + COMMON_INFORMATION_TABLE_NAME
+                + " ORDER BY " + KEY_TABLE_TIME + " DESC";
+        return database.rawQuery(query, null);
+    }
+
+    public Cursor getOnlySource(FeedSourceName name) {
+        SQLiteDatabase database = getWritableDatabase();
+        String query = "SELECT * FROM " + COMMON_INFORMATION_TABLE_NAME
+                + " WHERE " + KEY_TABLE_SOURCE + " = '" + name.toString() + "'"
+                + " ORDER BY " + KEY_TABLE_TIME + " DESC";
         return database.rawQuery(query, null);
     }
 

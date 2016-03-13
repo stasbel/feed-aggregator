@@ -3,13 +3,9 @@ package belaevstanislav.feedagregator.feeditem.shell;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextPaint;
-import android.text.style.URLSpan;
-import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.core.models.Tweet;
@@ -19,9 +15,9 @@ import com.twitter.sdk.android.core.models.UrlEntity;
 import java.text.ParseException;
 
 import belaevstanislav.feedagregator.feeditem.core.FeedItemCore;
-import belaevstanislav.feedagregator.feedlist.FeedItemViewHolder;
 import belaevstanislav.feedagregator.util.Constant;
 import belaevstanislav.feedagregator.util.view.TextBlock;
+import belaevstanislav.feedagregator.util.view.ViewMethod;
 
 public class TWITTERFeedItem extends FeedItem {
     private final String authorInfo;
@@ -67,52 +63,21 @@ public class TWITTERFeedItem extends FeedItem {
     }
 
     @Override
-    void drawSpecialHead(Context context, FeedItemViewHolder holder) {
-        holder.getAuthorInfo().setTextSize(Constant.VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE);
-        holder.getAuthorInfo().setText(authorInfo);
+    void drawSpecialHead(Context context, LinearLayout info) {
+        TextView twitterAddress = new TextView(context);
+        twitterAddress.setTextSize(Constant.VIEW_AUTHOR_INFO_TWITTER_TEXT_SIZE);
+        twitterAddress.setText(authorInfo);
+        info.addView(twitterAddress);
     }
 
-    private class URLSpanNoUnderline extends URLSpan {
-        public URLSpanNoUnderline(URLSpan src) {
-            super(src.getURL());
-        }
 
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-        }
-    }
-
-    private class Factory extends Spannable.Factory {
-        @Override
-        public Spannable newSpannable(CharSequence source) {
-            return new SpannableNoUnderline(source);
-        }
-    }
-
-    private class SpannableNoUnderline extends SpannableString {
-        public SpannableNoUnderline(CharSequence source) {
-            super(source);
-        }
-
-        @Override
-        public void setSpan(Object what, int start, int end, int flags) {
-            if (what instanceof URLSpan) {
-                what = new URLSpanNoUnderline((URLSpan) what);
-            }
-            super.setSpan(what, start, end, flags);
-        }
-    }
 
     @Override
     void fillContent(Context context, LinearLayout content) {
         if (!text.equals("")) {
             TextBlock textBlock = new TextBlock(context);
             textBlock.setText(text);
-            Linkify.addLinks(textBlock, Linkify.ALL);
-            textBlock.setSpannableFactory(new Factory());
-            textBlock.setLinkTextColor(Constant.VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR);
+            ViewMethod.linkify(textBlock, Constant.VIEW_TWITTER_TEXT_BLOCK_LINK_COLOR);
             content.addView(textBlock);
         }
 

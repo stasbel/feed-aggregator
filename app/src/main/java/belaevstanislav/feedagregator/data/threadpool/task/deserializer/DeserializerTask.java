@@ -10,6 +10,7 @@ import belaevstanislav.feedagregator.data.threadpool.task.Task;
 import belaevstanislav.feedagregator.data.threadpool.task.TaskPriority;
 import belaevstanislav.feedagregator.feeditem.shell.FeedItem;
 import belaevstanislav.feedagregator.feeditem.shell.TWITTERFeedItem;
+import belaevstanislav.feedagregator.feeditem.shell.VKFeedItem;
 import belaevstanislav.feedagregator.feedsource.FeedSourceName;
 import belaevstanislav.feedagregator.service.Notificator;
 import belaevstanislav.feedagregator.service.util.ParcelableMethod;
@@ -25,14 +26,10 @@ public class DeserializerTask extends Task implements Runnable {
 
     @Override
     public void run() {
-        Data data = getData();
         Cursor cursor = data.database.getAllWithBytecode();
-        cursor.moveToPosition(0);
-        int count = cursor.getCount();
         CursorInfo cursorInfo = new CursorInfo(cursor);
-        for (int index = 0; index < count; index++) {
+        while (cursor.moveToNext()) {
             data.taskPool.submitFeedItemBuilderTask(new DeserializeFeedItem(data, cursor, cursorInfo));
-            cursor.moveToNext();
         }
         notificator.notifyReadyToShow();
     }
@@ -49,6 +46,10 @@ public class DeserializerTask extends Task implements Runnable {
                 case TWITTER:
                     feedItem = ParcelableMethod.unmarshall(cursor.getBlob(cursorInfo.getIndexColumnBytecode()),
                             TWITTERFeedItem.CREATOR);
+                    break;
+                case VK:
+                    feedItem = ParcelableMethod.unmarshall(cursor.getBlob(cursorInfo.getIndexColumnBytecode()),
+                            VKFeedItem.CREATOR);
                     break;
                 default:
                     feedItem = null;
