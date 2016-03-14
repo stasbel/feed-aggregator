@@ -108,7 +108,7 @@ public class Constant {
     // public static final float ROW_LAYOUT_MAX_HEIGHT = resources.getDimensionPixelSize(R.dimen.row_layout_max_height);
     public static final float SWIPE_FULL_TRASHHOLD = 0.85f;
     public static final float SWIPE_LOCK_SIZE = resources.getDimensionPixelSize(R.dimen.swipe_lock_size);
-    public static final float SWIPE_LOCK_TRASHHOLD = 1 - (SWIPE_LOCK_SIZE / SCREEN_WIDTH_PX);
+    public static final float SWIPE_LOCK_TRASHHOLD = (SWIPE_FULL_TRASHHOLD * SCREEN_WIDTH_PX - SWIPE_LOCK_SIZE) / SCREEN_WIDTH_PX;
     public static final float SWIPE_LOCK_MARGIN = resources.getDimensionPixelSize(R.dimen.swipe_lock_margin);
     public static final Paint SWIPE_LEFT_BACKGROUND_PAINT = new Paint();
     static {
@@ -169,4 +169,5 @@ public class Constant {
     public static final int DRAWER_BACKGROUND_COLOR = getResolvedColor(R.color.drawer_background_color);
     public static final int DRAWER_TWITTER_COLOR = getResolvedColor(R.color.drawer_twitter_color);
     public static final int DRAWER_VK_COLOR = getResolvedColor(R.color.drawer_vk_color);
+    public static final String DRAWER_NEW_ITEMS_POSTFIX = resources.getString(R.string.drawer_news_items_postfix);
 }

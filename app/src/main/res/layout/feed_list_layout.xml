@@ -13,8 +13,8 @@
         android:visibility="invisible">
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:contentDescription="@null"
             android:src="@drawable/ic_refresh_black_48dp"
             android:layout_above="@+id/feed_list_placeholder_text"
@@ -29,7 +29,7 @@
             android:layout_centerVertical="true"
             android:alpha="0.5"
             android:text="@string/feed_list_placeholder_text"
-            android:textSize="20sp"
+            android:textSize="15sp"
             android:visibility="visible"/>
     </RelativeLayout>
 

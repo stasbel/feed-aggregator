@@ -10,4 +10,5 @@
     <string name="toast_twitter_already_login_in">"Already login in TWITTER!"</string>
     <string name="toast_vk_already_login_in">"Already login in VK!"</string>
     <string name="feed_list_placeholder_text">No news for now! Try to refresh.</string>
+    <string name="drawer_news_items_postfix">unread</string>
 </resources>

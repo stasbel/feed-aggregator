@@ -141,9 +141,13 @@ public class MenuDrawer extends Drawer {
     }
 
     @Nullable
-    private StringHolder createBadgeStringHolder(int count, String prefix) {
+    private StringHolder createBadgeStringHolder(int count, String prefix, String postfix) {
         if (count > 0) {
-            return new StringHolder(prefix + String.valueOf(count));
+            if (count > 99) {
+                return new StringHolder(prefix + "99+" + postfix);
+            } else {
+                return new StringHolder(prefix + String.valueOf(count) + postfix);
+            }
         } else {
             return null;
         }
@@ -175,9 +179,9 @@ public class MenuDrawer extends Drawer {
             cursor.moveToPosition(-1);
         }
 
-        updateBadge(FEED_LIST_ITEM_IDINTIFIER, createBadgeStringHolder(ALLCount, "+"));
-        updateBadge(TWITTER_ITEM_IDINTIFIER, createBadgeStringHolder(TWITTERCount, ""));
-        updateBadge(VK_ITEM_IDINTIFIER, createBadgeStringHolder(VKCount, ""));
+        updateBadge(FEED_LIST_ITEM_IDINTIFIER, createBadgeStringHolder(ALLCount, "", " " + Constant.DRAWER_NEW_ITEMS_POSTFIX));
+        updateBadge(TWITTER_ITEM_IDINTIFIER, createBadgeStringHolder(TWITTERCount, "", ""));
+        updateBadge(VK_ITEM_IDINTIFIER, createBadgeStringHolder(VKCount, "", ""));
     }
 
     public Selection getSelection() {
